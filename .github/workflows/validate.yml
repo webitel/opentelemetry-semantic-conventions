@@ -33,7 +33,7 @@ jobs:
       # Both the shared policies and the markdown templates are fetched from
       # the pinned package repo; weaver caches them under the mounted ~/.weaver.
       - name: Cache weaver's remote fetches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.weaver
           key: weaver-vdir-${{ runner.os }}-${{ hashFiles('Makefile', 'model/manifest.yaml') }}
@@ -50,7 +50,7 @@ jobs:
           persist-credentials: false
 
       - name: Cache weaver's remote fetches
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.weaver
           key: weaver-vdir-${{ runner.os }}-${{ hashFiles('Makefile', 'model/manifest.yaml') }}
