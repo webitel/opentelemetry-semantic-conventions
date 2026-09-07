@@ -1,0 +1,49 @@
+groups:
+  - id: metric.webitel.health.ready
+    type: metric
+    metric_name: webitel.health.ready
+    stability: development
+    brief: 1 when the registry reports the node ready to serve traffic, 0 otherwise.
+    instrument: gauge
+    unit: "{node}"
+
+  - id: metric.webitel.health.check.state
+    type: metric
+    metric_name: webitel.health.check.state
+    stability: development
+    brief: 1 when a check's current status is ok, 0 otherwise; a stale result is not healthy.
+    instrument: gauge
+    unit: "{check}"
+    attributes:
+      - ref: webitel.health.check.name
+        requirement_level: required
+      - ref: webitel.health.check.group
+        requirement_level: required
+
+  - id: metric.webitel.health.check.transitions
+    type: metric
+    metric_name: webitel.health.check.transitions
+    stability: development
+    brief: Cumulative count of a check's status transitions, by the status transitioned into.
+    instrument: counter
+    unit: "{transition}"
+    attributes:
+      - ref: webitel.health.check.name
+        requirement_level: required
+      - ref: webitel.health.check.group
+        requirement_level: required
+      - ref: webitel.health.check.status
+        requirement_level: required
+
+  - id: metric.webitel.health.check.duration
+    type: metric
+    metric_name: webitel.health.check.duration
+    stability: development
+    brief: Elapsed time of a check's last completed run; absent until the first run lands.
+    instrument: gauge
+    unit: s
+    attributes:
+      - ref: webitel.health.check.name
+        requirement_level: required
+      - ref: webitel.health.check.group
+        requirement_level: required

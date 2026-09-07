@@ -1,0 +1,19 @@
+name: webitel
+description: >
+  Webitel telemetry semantic conventions. Defines the conventions Webitel
+  services emit that have no upstream equivalent, and references the upstream
+  conventions they emit alongside them.
+
+# Everything before the version is the schema family identifier, and the spec
+# requires it to stay constant across every version this registry ever
+# publishes. Telemetry already emitted carries it, so this host and repository
+# name are load-bearing: renaming the repository orphans the schema url of all
+# data emitted before the rename. It is an identity, not a link to be tidied.
+#
+# Served by .github/workflows/pages.yml, which publishes schemas/ to Pages.
+schema_url: https://webitel.github.io/opentelemetry-semantic-conventions/schemas/0.1.0
+stability: development
+
+dependencies:
+  - schema_url: https://opentelemetry.io/schemas/1.43.0
+    registry_path: https://github.com/open-telemetry/semantic-conventions.git@v1.43.0[model]

@@ -1,0 +1,46 @@
+groups:
+  - id: registry.webitel.health
+    type: attribute_group
+    display_name: Webitel Health Check Attributes
+    brief: Attributes describing one registered health check.
+    attributes:
+      - id: webitel.health.check.name
+        type: string
+        stability: development
+        brief: The name the check was registered under.
+        examples: ["postgres", "rabbitmq", "consul"]
+
+      - id: webitel.health.check.group
+        type:
+          members:
+            - id: liveness
+              value: "liveness"
+              brief: liveness probe; a failure also fails readiness.
+              stability: development
+            - id: critical
+              value: "critical"
+              brief: node-local dependency; a failure takes the node out of rotation.
+              stability: development
+            - id: informational
+              value: "informational"
+              brief: dependency whose failure only degrades; the node stays in rotation.
+              stability: development
+        stability: development
+        brief: The group the check belongs to, which decides how a failure affects readiness.
+
+      - id: webitel.health.check.status
+        type:
+          members:
+            - id: ok
+              value: "ok"
+              brief: passing check.
+              stability: development
+            - id: fail
+              value: "fail"
+              brief: check that failed past its threshold.
+              stability: development
+        stability: development
+        brief: The status a check transitioned into.
+        note: >
+          `unknown` is never a stored status, so it is never a transition
+          target and has no member here.

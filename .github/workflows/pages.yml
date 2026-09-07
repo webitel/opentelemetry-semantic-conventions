@@ -1,0 +1,62 @@
+name: Pages
+
+# Publishes the telemetry schema files under schemas/ to GitHub Pages, so that
+# the schema_url in model/manifest.yaml actually resolves -- that url is what a
+# collector's schemaprocessor fetches to convert telemetry between versions.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'schemas/**'
+      - '.github/workflows/pages.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Assemble the site
+        run: |
+          test -d schemas || { echo "no schemas/ directory to publish" >&2; exit 1; }
+          mkdir -p _site/schemas
+
+          # Every file in here is a schema file and must be named for its
+          # version, because that name is the last path segment of the schema
+          # url identifying it. Anything else is a mistake worth failing on: a
+          # schema file under the wrong name is unreachable.
+          for f in schemas/*; do
+            name="${f##*/}"
+            case "$name" in
+              [0-9]*.[0-9]*.[0-9]*) cp "$f" _site/schemas/ ;;
+              *) echo "schemas/$name is not a version" >&2; exit 1 ;;
+            esac
+          done
+
+          test -n "$(ls -A _site/schemas)" || { echo "no schema files to publish" >&2; exit 1; }
+          ls -la _site/schemas/
+
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+
+      - id: deploy
+        uses: actions/deploy-pages@v5

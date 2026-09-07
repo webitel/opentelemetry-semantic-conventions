@@ -1,0 +1,21 @@
+# Conventions this module emits but does not define. They exist here only to
+# reach the generated reference — whoever configures a collector, a dashboard or
+# an alert needs to know these arrive. The Go package deliberately does not
+# re-export them: the templates/registry/go filters keep it to `webitel.*`, and
+# callers import go.opentelemetry.io/otel/semconv for these instead.
+#
+# Attributes are modelled through the signal that carries them rather than as a
+# bare attribute_group, because that is what the upstream markdown templates
+# document: a span page lists its attributes and links each one to the upstream
+# registry via the upstream_docs map in ../.weaver.toml, instead of copying
+# upstream prose into this repo.
+imports:
+  metrics:
+    - go.config.gogc
+    - go.goroutine.count
+    - go.memory.allocated
+    - go.memory.allocations
+    - go.memory.gc.goal
+    - go.memory.used
+    - go.processor.limit
+
