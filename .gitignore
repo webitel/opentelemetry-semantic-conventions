@@ -1,0 +1,10 @@
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Editor/IDE local state
+.idea/
+.vscode/
+
+# Weaver publication artifacts
+.build/

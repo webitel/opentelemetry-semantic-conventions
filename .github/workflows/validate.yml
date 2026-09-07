@@ -1,0 +1,74 @@
+name: Validate
+
+on:
+  push:
+    branches: [ main ]
+
+  pull_request:
+    branches: [ main ]
+
+  merge_group:
+  workflow_call:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  policies:
+    name: Model
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      # No weaver install step: the Makefile always runs it from the pinned
+      # otel/weaver image, which is why nothing here selects a version.
+      #
+      # Both the shared policies and the markdown templates are fetched from
+      # the pinned package repo; weaver caches them under the mounted ~/.weaver.
+      - name: Cache weaver's remote fetches
+        uses: actions/cache@v4
+        with:
+          path: ~/.weaver
+          key: weaver-vdir-${{ runner.os }}-${{ hashFiles('Makefile', 'model/manifest.yaml') }}
+
+      - run: make check-policies
+
+  generated-docs:
+    name: Generated docs
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Cache weaver's remote fetches
+        uses: actions/cache@v4
+        with:
+          path: ~/.weaver
+          key: weaver-vdir-${{ runner.os }}-${{ hashFiles('Makefile', 'model/manifest.yaml') }}
+
+      - name: Regenerate and check committed outputs are in sync
+        run: |
+          make generate-all
+          if ! git diff --exit-code -- ./docs; then
+            echo "FAIL: committed generated outputs are out of sync!"
+            echo "Run 'make generate-all' and commit the changes."
+            exit 1
+          fi
+
+          untracked=$(git ls-files --others --exclude-standard -- ./docs)
+          if [ -n "$untracked" ]; then
+            echo "FAIL: untracked files under generated outputs:"
+            echo "$untracked"
+            exit 1
+          fi
+
+          echo "OK: committed generated outputs are up to date"

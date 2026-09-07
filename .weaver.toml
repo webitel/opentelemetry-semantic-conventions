@@ -1,0 +1,16 @@
+# Project-level template settings the markdown templates expect to be supplied
+# per-registry rather than shipped with them.
+
+[template]
+# Interpreted by the `acronym` filter when title-casing namespace headings.
+acronyms = ["DB", "gRPC", "RPC", "SQL", "URL", "ID", "IO", "TLS", "HTTP"]
+
+# Where each dependency's attributes are documented, keyed by its schema url.
+# Attributes referenced but not defined here are linked there instead of being
+# re-documented; an unlisted dependency renders without a link.
+#
+# The version appears here and in model/manifest.yaml. It cannot be derived:
+# weaver reads this file itself, so nothing can interpolate into it. `make
+# check-upstream-version` fails if the two drift apart.
+[template.text_maps.upstream_docs]
+"https://opentelemetry.io/schemas/1.43.0" = "https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/{namespace}.md"

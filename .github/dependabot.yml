@@ -1,0 +1,14 @@
+version: 2
+
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+
+    allow: [ dependency-type: "direct" ]
+    open-pull-requests-limit: 5
+    labels: [ "dependencies", "github-actions" ]
+    commit-message:
+      include: scope
+      prefix: "chore"
