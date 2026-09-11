@@ -8,6 +8,11 @@ groups:
         type: string
         stability: development
         brief: The name the check was registered under.
+        note: >
+          A check is a probe the node runs in the background on its own
+          schedule — reaching a dependency, or testing an internal condition —
+          and whose last result is cached. Reading these metrics never triggers
+          a run, so scraping adds no load to the dependency being checked.
         examples: ["postgres", "rabbitmq", "consul"]
 
       - id: webitel.health.check.group
@@ -15,32 +20,39 @@ groups:
           members:
             - id: liveness
               value: "liveness"
-              brief: liveness probe; a failure also fails readiness.
+              brief: Is this process wedged? A failure takes the node out of rotation and fails its liveness probe.
               stability: development
             - id: critical
               value: "critical"
-              brief: node-local dependency; a failure takes the node out of rotation.
+              brief: A node-local fault, where moving traffic to another node genuinely helps; a failure takes the node out of rotation.
               stability: development
             - id: informational
               value: "informational"
-              brief: dependency whose failure only degrades; the node stays in rotation.
+              brief: Everything else, typically shared infrastructure; a failure marks the node degraded but leaves it in rotation.
               stability: development
         stability: development
         brief: The group the check belongs to, which decides how a failure affects readiness.
+        note: >
+          The group is chosen at registration, not by the check itself. Making
+          shared infrastructure `critical` is usually wrong: one outage then
+          takes the whole fleet out of rotation at once.
 
       - id: webitel.health.check.status
         type:
           members:
             - id: ok
               value: "ok"
-              brief: passing check.
+              brief: Passing check.
               stability: development
             - id: fail
               value: "fail"
-              brief: check that failed past its threshold.
+              brief: Check that failed past its threshold.
               stability: development
         stability: development
         brief: The status a check transitioned into.
         note: >
-          `unknown` is never a stored status, so it is never a transition
-          target and has no member here.
+          A check goes `fail` only after several consecutive failures, and
+          recovers on the first success, so a flapping dependency does not flip
+          the node on every run. `unknown` — never ran, or the result went
+          stale — is never a stored status, so it is never a transition target
+          and has no member here.

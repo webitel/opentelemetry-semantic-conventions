@@ -3,7 +3,12 @@ groups:
     type: metric
     metric_name: webitel.health.ready
     stability: development
-    brief: 1 when the registry reports the node ready to serve traffic, 0 otherwise.
+    brief: Whether the node is taking traffic, as decided by its health checks.
+    note: >
+      1 while the node is in rotation, 0 while it is not: nothing has passed
+      yet, a `liveness` or `critical` check is failing, or the node is shutting
+      down. A degraded node — only `informational` checks failing — still
+      reports 1.
     instrument: gauge
     unit: "{node}"
 
@@ -11,7 +16,11 @@ groups:
     type: metric
     metric_name: webitel.health.check.state
     stability: development
-    brief: 1 when a check's current status is ok, 0 otherwise; a stale result is not healthy.
+    brief: Whether one health check is currently passing.
+    note: >
+      1 when the check's last result is `ok`, 0 otherwise. A check that never
+      ran, or whose result went stale, reads as 0: an old answer is not a
+      healthy one.
     instrument: gauge
     unit: "{check}"
     attributes:
@@ -24,7 +33,12 @@ groups:
     type: metric
     metric_name: webitel.health.check.transitions
     stability: development
-    brief: Cumulative count of a check's status transitions, by the status transitioned into.
+    brief: How many times a health check flipped into the given status since the process started.
+    note: >
+      A check starts out unknown, so its first completed run counts as one
+      transition. Going stale does not: it is applied when the result is read,
+      never stored. Use this to spot a flapping dependency that
+      `webitel.health.check.state` shows as healthy right now.
     instrument: counter
     unit: "{transition}"
     attributes:
@@ -39,7 +53,11 @@ groups:
     type: metric
     metric_name: webitel.health.check.duration
     stability: development
-    brief: Elapsed time of a check's last completed run; absent until the first run lands.
+    brief: How long the health check's most recent completed run took.
+    note: >
+      Not reported until the check has completed its first run. A run that is
+      still in flight does not update it, so a check that hangs shows its last
+      good duration until it goes stale.
     instrument: gauge
     unit: s
     attributes:
