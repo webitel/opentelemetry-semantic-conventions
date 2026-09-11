@@ -10,10 +10,10 @@
 
 | Name | Stability | Description |
 | --- | --- | --- |
-| [`webitel.health.check.duration`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthcheckduration) | ![Development](https://img.shields.io/badge/-development-blue) | Elapsed time of a check's last completed run; absent until the first run lands. |
-| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthcheckstate) | ![Development](https://img.shields.io/badge/-development-blue) | 1 when a check's current status is ok, 0 otherwise; a stale result is not healthy. |
-| [`webitel.health.check.transitions`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthchecktransitions) | ![Development](https://img.shields.io/badge/-development-blue) | Cumulative count of a check's status transitions, by the status transitioned into. |
-| [`webitel.health.ready`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthready) | ![Development](https://img.shields.io/badge/-development-blue) | 1 when the registry reports the node ready to serve traffic, 0 otherwise. |
+| [`webitel.health.check.duration`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthcheckduration) | ![Development](https://img.shields.io/badge/-development-blue) | How long the health check's most recent completed run took. |
+| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthcheckstate) | ![Development](https://img.shields.io/badge/-development-blue) | Whether one health check is currently passing. |
+| [`webitel.health.check.transitions`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthchecktransitions) | ![Development](https://img.shields.io/badge/-development-blue) | How many times a health check flipped into the given status since the process started. |
+| [`webitel.health.ready`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthready) | ![Development](https://img.shields.io/badge/-development-blue) | Whether the node is taking traffic, as decided by its health checks. |
 
 ## Attributes
 
@@ -21,11 +21,15 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 
 | Key | Stability | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- |
-| <a id="webitel-health-check-group">`webitel.health.check.group`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The group the check belongs to, which decides how a failure affects readiness. | `liveness`; `critical`; `informational` |
-| <a id="webitel-health-check-name">`webitel.health.check.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name the check was registered under. | `postgres`; `rabbitmq`; `consul` |
-| <a id="webitel-health-check-status">`webitel.health.check.status`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The status a check transitioned into. [1] | `ok`; `fail` |
+| <a id="webitel-health-check-group">`webitel.health.check.group`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The group the check belongs to, which decides how a failure affects readiness. [1] | `liveness`; `critical`; `informational` |
+| <a id="webitel-health-check-name">`webitel.health.check.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name the check was registered under. [2] | `postgres`; `rabbitmq`; `consul` |
+| <a id="webitel-health-check-status">`webitel.health.check.status`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The status a check transitioned into. [3] | `ok`; `fail` |
 
-**[1] `webitel.health.check.status`:** `unknown` is never a stored status, so it is never a transition target and has no member here.
+**[1] `webitel.health.check.group`:** The group is chosen at registration, not by the check itself. Making shared infrastructure `critical` is usually wrong: one outage then takes the whole fleet out of rotation at once.
+
+**[2] `webitel.health.check.name`:** A check is a probe the node runs in the background on its own schedule — reaching a dependency, or testing an internal condition — and whose last result is cached. Reading these metrics never triggers a run, so scraping adds no load to the dependency being checked.
+
+**[3] `webitel.health.check.status`:** A check goes `fail` only after several consecutive failures, and recovers on the first success, so a flapping dependency does not flip the node on every run. `unknown` — never ran, or the result went stale — is never a stored status, so it is never a transition target and has no member here.
 
 ---
 
@@ -33,9 +37,9 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 
 | Value | Description | Stability |
 | --- | --- | --- |
-| `critical` | node-local dependency; a failure takes the node out of rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
-| `informational` | dependency whose failure only degrades; the node stays in rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
-| `liveness` | liveness probe; a failure also fails readiness. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `critical` | A node-local fault, where moving traffic to another node genuinely helps; a failure takes the node out of rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `informational` | Everything else, typically shared infrastructure; a failure marks the node degraded but leaves it in rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `liveness` | Is this process wedged? A failure takes the node out of rotation and fails its liveness probe. | ![Development](https://img.shields.io/badge/-development-blue) |
 
 ---
 
@@ -43,5 +47,5 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 
 | Value | Description | Stability |
 | --- | --- | --- |
-| `fail` | check that failed past its threshold. | ![Development](https://img.shields.io/badge/-development-blue) |
-| `ok` | passing check. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `fail` | Check that failed past its threshold. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `ok` | Passing check. | ![Development](https://img.shields.io/badge/-development-blue) |
