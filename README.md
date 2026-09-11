@@ -11,7 +11,7 @@ on the core semantic conventions.
 
 ## Schema URL
 
-`https://webitel.github.io/opentelemetry-semantic-conventions/schemas/0.1.0`
+`https://webitel.github.io/opentelemetry-semantic-conventions/schemas/0.1.1`
 
 The Schema URL allows telemetry producers and consumers to explicitly communicate
 which schema version is being used and provides a mechanism for translating
