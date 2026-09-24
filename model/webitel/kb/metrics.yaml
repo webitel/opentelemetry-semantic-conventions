@@ -1,0 +1,28 @@
+groups:
+  - id: metric.webitel.kb.article.count
+    type: metric
+    metric_name: webitel.kb.article.count
+    stability: development
+    brief: How many articles are in the given indexing state.
+    note: Live articles across all domains. Reported by one node only.
+    instrument: updowncounter
+    unit: "{article}"
+    attributes:
+      - ref: webitel.kb.article.index.state
+        requirement_level: required
+
+  - id: metric.webitel.kb.rerank.duration
+    type: metric
+    metric_name: webitel.kb.rerank.duration
+    stability: development
+    brief: How long one rerank call to a provider took.
+    instrument: histogram
+    unit: s
+    attributes:
+      - ref: webitel.kb.rerank.provider
+        requirement_level: required
+      - ref: webitel.kb.rerank.model
+        requirement_level: required
+      - ref: error.type
+        requirement_level:
+          conditionally_required: If the call failed.

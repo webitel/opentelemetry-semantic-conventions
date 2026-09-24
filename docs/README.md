@@ -16,4 +16,5 @@ in a namespace are also available on the namespace page.
 Currently, the following namespaces exist:
 
 - [Go](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/go/README.md)
+- [Messaging](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/messaging/README.md)
 - [Webitel](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md)

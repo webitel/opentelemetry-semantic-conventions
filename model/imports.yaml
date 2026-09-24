@@ -18,4 +18,5 @@ imports:
     - go.memory.gc.goal
     - go.memory.used
     - go.processor.limit
+    - messaging.client.sent.messages
 

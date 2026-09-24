@@ -14,6 +14,12 @@
 | [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthcheckstate) | ![Development](https://img.shields.io/badge/-development-blue) | Whether one health check is currently passing. |
 | [`webitel.health.check.transitions`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthchecktransitions) | ![Development](https://img.shields.io/badge/-development-blue) | How many times a health check flipped into the given status since the process started. |
 | [`webitel.health.ready`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelhealthready) | ![Development](https://img.shields.io/badge/-development-blue) | Whether the node is taking traffic, as decided by its health checks. |
+| [`webitel.kb.article.count`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelkbarticlecount) | ![Development](https://img.shields.io/badge/-development-blue) | How many articles are in the given indexing state. |
+| [`webitel.kb.rerank.duration`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webitelkbrerankduration) | ![Development](https://img.shields.io/badge/-development-blue) | How long one rerank call to a provider took. |
+| [`webitel.outbox.event.age`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webiteloutboxeventage) | ![Development](https://img.shields.io/badge/-development-blue) | How long the oldest waiting outbox event has been waiting. |
+| [`webitel.outbox.event.count`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webiteloutboxeventcount) | ![Development](https://img.shields.io/badge/-development-blue) | How many outbox events are waiting to be published to the broker. |
+| [`webitel.outbox.relay.leader`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webiteloutboxrelayleader) | ![Development](https://img.shields.io/badge/-development-blue) | Whether this node runs the outbox relay. |
+| [`webitel.outbox.relay.poisoned`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/metrics.md#webiteloutboxrelaypoisoned) | ![Development](https://img.shields.io/badge/-development-blue) | How many outbox events the relay set aside after its retries ran out. |
 
 ## Attributes
 
@@ -24,6 +30,9 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | <a id="webitel-health-check-group">`webitel.health.check.group`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The group the check belongs to, which decides how a failure affects readiness. [1] | `liveness`; `critical`; `informational` |
 | <a id="webitel-health-check-name">`webitel.health.check.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name the check was registered under. [2] | `postgres`; `rabbitmq`; `consul` |
 | <a id="webitel-health-check-status">`webitel.health.check.status`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The status a check transitioned into. [3] | `ok`; `fail` |
+| <a id="webitel-kb-article-index-state">`webitel.kb.article.index.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | How far the latest version of an article got through indexing. | `pending`; `indexing`; `indexed` |
+| <a id="webitel-kb-rerank-model">`webitel.kb.rerank.model`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The model the rerank call was made to, as the provider names it. | `rerank-v3.5`; `bge-reranker-v2-m3` |
+| <a id="webitel-kb-rerank-provider">`webitel.kb.rerank.provider`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The provider that served the rerank call. | `cohere`; `bge-reranker` |
 
 **[1] `webitel.health.check.group`:** The group is chosen at registration, not by the check itself. Making shared infrastructure `critical` is usually wrong: one outage then takes the whole fleet out of rotation at once.
 
@@ -49,3 +58,14 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | --- | --- | --- |
 | `fail` | Check that failed past its threshold. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `ok` | Passing check. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.kb.article.index.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `failed` | The latest version could not be indexed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `indexed` | The latest version is searchable. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `indexing` | The latest version is being indexed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `pending` | The latest version waits to be indexed. | ![Development](https://img.shields.io/badge/-development-blue) |

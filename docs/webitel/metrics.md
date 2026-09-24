@@ -9,6 +9,12 @@
 | [`webitel.health.check.state`](#webitelhealthcheckstate) | ![Development](https://img.shields.io/badge/-development-blue) | Whether one health check is currently passing. |
 | [`webitel.health.check.transitions`](#webitelhealthchecktransitions) | ![Development](https://img.shields.io/badge/-development-blue) | How many times a health check flipped into the given status since the process started. |
 | [`webitel.health.ready`](#webitelhealthready) | ![Development](https://img.shields.io/badge/-development-blue) | Whether the node is taking traffic, as decided by its health checks. |
+| [`webitel.kb.article.count`](#webitelkbarticlecount) | ![Development](https://img.shields.io/badge/-development-blue) | How many articles are in the given indexing state. |
+| [`webitel.kb.rerank.duration`](#webitelkbrerankduration) | ![Development](https://img.shields.io/badge/-development-blue) | How long one rerank call to a provider took. |
+| [`webitel.outbox.event.age`](#webiteloutboxeventage) | ![Development](https://img.shields.io/badge/-development-blue) | How long the oldest waiting outbox event has been waiting. |
+| [`webitel.outbox.event.count`](#webiteloutboxeventcount) | ![Development](https://img.shields.io/badge/-development-blue) | How many outbox events are waiting to be published to the broker. |
+| [`webitel.outbox.relay.leader`](#webiteloutboxrelayleader) | ![Development](https://img.shields.io/badge/-development-blue) | Whether this node runs the outbox relay. |
+| [`webitel.outbox.relay.poisoned`](#webiteloutboxrelaypoisoned) | ![Development](https://img.shields.io/badge/-development-blue) | How many outbox events the relay set aside after its retries ran out. |
 
 ## `webitel.health.check.duration`
 
@@ -124,5 +130,130 @@
 **Requirement Level:** `Recommended`
 
 **[4]:** 1 while the node is in rotation, 0 while it is not: nothing has passed yet, a `liveness` or `critical` check is failing, or the node is shutting down. A degraded node — only `informational` checks failing — still reports 1.
+
+
+
+## `webitel.kb.article.count`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.kb.article.count` | UpDownCounter | `{article}` | How many articles are in the given indexing state. [5] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[5]:** Live articles across all domains. Reported by one node only.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | How far the latest version of an article got through indexing. | `pending`; `indexing`; `indexed` |
+
+---
+
+`webitel.kb.article.index.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `failed` | The latest version could not be indexed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `indexed` | The latest version is searchable. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `indexing` | The latest version is being indexed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `pending` | The latest version waits to be indexed. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.kb.rerank.duration`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.kb.rerank.duration` | Histogram | `s` | How long one rerank call to a provider took. | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.kb.rerank.model`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-model) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The model the rerank call was made to, as the provider names it. | `rerank-v3.5`; `bge-reranker-v2-m3` |
+| [`webitel.kb.rerank.provider`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-provider) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The provider that served the rerank call. | `cohere`; `bge-reranker` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the call failed. | string | Describes a class of error the operation ended with. [8] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+
+**[8] `error.type`:** The `error.type` SHOULD be predictable, and SHOULD have low cardinality.
+
+When `error.type` is set to a type (e.g., an exception type), its
+canonical class name identifying the type within the artifact SHOULD be used.
+
+If the recorded error type is a wrapper that is not meaningful for
+failure classification, instrumentation MAY use the type of the inner
+error instead. For example, in Go, errors created with `fmt.Errorf`
+using `%w` MAY be unwrapped when the wrapper type does not help
+classify the failure.
+
+Instrumentations SHOULD document the list of errors they report.
+
+The cardinality of `error.type` within one instrumentation library SHOULD be low.
+Telemetry consumers that aggregate data from multiple instrumentation libraries and applications
+should be prepared for `error.type` to have high cardinality at query time when no
+additional filters are applied.
+
+If the operation has completed successfully, instrumentations SHOULD NOT set `error.type`.
+
+If a specific domain defines its own set of error identifiers (such as HTTP or RPC status codes),
+it's RECOMMENDED to:
+
+- Use a domain-specific attribute
+- Set `error.type` to capture all errors, regardless of whether they are defined within the domain-specific set or not.
+
+---
+
+`error.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `_OTHER` | A fallback error value to be used when the instrumentation doesn't define a custom value. | ![Stable](https://img.shields.io/badge/-stable-lightgreen) |
+
+## `webitel.outbox.event.age`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.outbox.event.age` | Gauge | `s` | How long the oldest waiting outbox event has been waiting. [6] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[6]:** 0 when nothing is waiting. Reported only by the node that runs the relay.
+
+
+
+## `webitel.outbox.event.count`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.outbox.event.count` | UpDownCounter | `{event}` | How many outbox events are waiting to be published to the broker. [7] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[7]:** Reported only by the node that runs the relay.
+
+
+
+## `webitel.outbox.relay.leader`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.outbox.relay.leader` | Gauge | `{node}` | Whether this node runs the outbox relay. [8] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[8]:** 1 on the node that holds the relay lock, 0 on the rest.
+
+
+
+## `webitel.outbox.relay.poisoned`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.outbox.relay.poisoned` | Counter | `{event}` | How many outbox events the relay set aside after its retries ran out. [9] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[9]:** Such an event goes to the poison queue and is never published.
 
 
