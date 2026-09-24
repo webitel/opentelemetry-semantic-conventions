@@ -37,3 +37,12 @@ groups:
         stability: development
         brief: The model the rerank call was made to, as the provider names it.
         examples: ["rerank-v3.5", "bge-reranker-v2-m3"]
+
+      - id: webitel.kb.article.index.embedded
+        type: boolean
+        stability: development
+        brief: Whether the article version was embedded for vector search.
+        note: >
+          `false` for a space without vector search, where a version is only
+          indexed for full-text search.
+        examples: [true, false]
