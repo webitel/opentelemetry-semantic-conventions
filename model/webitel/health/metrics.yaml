@@ -3,12 +3,12 @@ groups:
     type: metric
     metric_name: webitel.health.ready
     stability: development
-    brief: Whether the node is taking traffic, as decided by its health checks.
+    brief: Whether the node is ready to take traffic.
     note: >
-      1 while the node is in rotation, 0 while it is not: nothing has passed
-      yet, a `liveness` or `critical` check is failing, or the node is shutting
-      down. A degraded node — only `informational` checks failing — still
-      reports 1.
+      The value MUST be 1 while the node is in rotation, and 0 otherwise:
+      before any check has passed, while a `liveness` or `critical` check
+      fails, and while the node shuts down. A failing `informational` check
+      MUST NOT set the value to 0.
     instrument: gauge
     unit: "{node}"
 
@@ -16,11 +16,11 @@ groups:
     type: metric
     metric_name: webitel.health.check.state
     stability: development
-    brief: Whether one health check is currently passing.
+    brief: Whether the health check currently passes.
     note: >
-      1 when the check's last result is `ok`, 0 otherwise. A check that never
-      ran, or whose result went stale, reads as 0: an old answer is not a
-      healthy one.
+      The value MUST be 1 when the last result of the check is `ok`, and 0
+      otherwise, including when the check has not run yet or its result is
+      stale.
     instrument: gauge
     unit: "{check}"
     attributes:
@@ -33,12 +33,10 @@ groups:
     type: metric
     metric_name: webitel.health.check.transitions
     stability: development
-    brief: How many times a health check flipped into the given status since the process started.
+    brief: "Number of transitions of a health check into the status described by the `webitel.health.check.status` attribute."
     note: >
-      A check starts out unknown, so its first completed run counts as one
-      transition. Going stale does not: it is applied when the result is read,
-      never stored. Use this to spot a flapping dependency that
-      `webitel.health.check.state` shows as healthy right now.
+      The first completed run of a check MUST be counted as a transition. A
+      result becoming stale MUST NOT be counted as a transition.
     instrument: counter
     unit: "{transition}"
     attributes:
@@ -53,11 +51,10 @@ groups:
     type: metric
     metric_name: webitel.health.check.duration
     stability: development
-    brief: How long the health check's most recent completed run took.
+    brief: Duration of the last completed run of a health check.
     note: >
-      Not reported until the check has completed its first run. A run that is
-      still in flight does not update it, so a check that hangs shows its last
-      good duration until it goes stale.
+      This metric MUST NOT be reported before the first run of the check
+      completes. A run in progress MUST NOT update the value.
     instrument: gauge
     unit: s
     attributes:

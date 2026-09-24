@@ -3,8 +3,8 @@ groups:
     type: metric
     metric_name: webitel.outbox.event.count
     stability: development
-    brief: How many outbox events are waiting to be published to the broker.
-    note: Reported only by the node that runs the relay.
+    brief: Number of outbox events waiting to be published to the broker.
+    note: This metric MUST be reported only by the node that runs the relay.
     instrument: updowncounter
     unit: "{event}"
 
@@ -12,8 +12,10 @@ groups:
     type: metric
     metric_name: webitel.outbox.event.age
     stability: development
-    brief: How long the oldest waiting outbox event has been waiting.
-    note: 0 when nothing is waiting. Reported only by the node that runs the relay.
+    brief: Age of the oldest outbox event waiting to be published to the broker.
+    note: >
+      The value MUST be 0 when no event is waiting. This metric MUST be
+      reported only by the node that runs the relay.
     instrument: gauge
     unit: s
 
@@ -21,8 +23,10 @@ groups:
     type: metric
     metric_name: webitel.outbox.relay.leader
     stability: development
-    brief: Whether this node runs the outbox relay.
-    note: 1 on the node that holds the relay lock, 0 on the rest.
+    brief: Whether the node runs the outbox relay.
+    note: >
+      The value MUST be 1 on the node that holds the relay lock, and 0 on the
+      other nodes.
     instrument: gauge
     unit: "{node}"
 
@@ -30,7 +34,9 @@ groups:
     type: metric
     metric_name: webitel.outbox.relay.poisoned
     stability: development
-    brief: How many outbox events the relay set aside after its retries ran out.
-    note: Such an event goes to the poison queue and is never published.
+    brief: Number of outbox events moved to the poison queue after the relay ran out of retries.
+    note: >
+      An event MUST be counted once, when it is moved to the poison queue. An
+      event in the poison queue is never published.
     instrument: counter
     unit: "{event}"
