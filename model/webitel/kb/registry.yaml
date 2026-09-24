@@ -2,40 +2,41 @@ groups:
   - id: registry.webitel.kb
     type: attribute_group
     display_name: Webitel Knowledge Base Attributes
-    brief: Attributes describing knowledge base articles and rerank calls.
+    brief: Attributes describing knowledge base articles, their indexing and rerank calls.
     attributes:
       - id: webitel.kb.article.index.state
         type:
           members:
             - id: pending
               value: "pending"
-              brief: The latest version waits to be indexed.
+              brief: The latest version of the article is waiting to be indexed.
               stability: development
             - id: indexing
               value: "indexing"
-              brief: The latest version is being indexed.
+              brief: The latest version of the article is being indexed.
               stability: development
             - id: indexed
               value: "indexed"
-              brief: The latest version is searchable.
+              brief: The latest version of the article is searchable.
               stability: development
             - id: failed
               value: "failed"
-              brief: The latest version could not be indexed.
+              brief: The latest version of the article could not be indexed.
               stability: development
         stability: development
-        brief: How far the latest version of an article got through indexing.
+        brief: The state of the index of an article.
+        note: The state is that of the latest version of the article.
 
       - id: webitel.kb.rerank.provider
         type: string
         stability: development
-        brief: The provider that served the rerank call.
+        brief: The name of the rerank provider.
         examples: ["cohere", "bge-reranker"]
 
       - id: webitel.kb.rerank.model
         type: string
         stability: development
-        brief: The model the rerank call was made to, as the provider names it.
+        brief: The name of the model a rerank request is made to, as named by the provider.
         examples: ["rerank-v3.5", "bge-reranker-v2-m3"]
 
       - id: webitel.kb.article.index.embedded

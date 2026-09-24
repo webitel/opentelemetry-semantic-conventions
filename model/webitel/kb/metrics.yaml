@@ -17,7 +17,7 @@ groups:
     type: metric
     metric_name: webitel.kb.rerank.duration
     stability: development
-    brief: How long one rerank call to a provider took.
+    brief: Duration of rerank calls to a provider.
     instrument: histogram
     unit: s
     attributes:
