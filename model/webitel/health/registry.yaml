@@ -35,7 +35,7 @@ groups:
           The group is assigned when the check is registered. A check of shared
           infrastructure SHOULD NOT be assigned to `critical`.
 
-      - id: webitel.health.check.status
+      - id: webitel.health.check.state
         type:
           members:
             - id: ok
@@ -46,9 +46,33 @@ groups:
               value: "fail"
               brief: The check fails.
               stability: development
+            - id: unknown
+              value: "unknown"
+              brief: The check has not run yet, or its result is stale.
+              stability: development
         stability: development
-        brief: The status the health check transitioned into.
+        brief: The state of the health check.
         note: >
-          A check MUST transition to `fail` only after several consecutive
-          failures, and MUST transition to `ok` on the first success. A check
-          that has not run yet, or whose result is stale, has no status.
+          A check MUST move to `fail` only after several consecutive failures,
+          and MUST move to `ok` on the first success.
+
+      - id: webitel.health.state
+        type:
+          members:
+            - id: ready
+              value: "ready"
+              brief: The node is in rotation and all its checks pass.
+              stability: development
+            - id: degraded
+              value: "degraded"
+              brief: The node is in rotation and at least one `informational` check fails.
+              stability: development
+            - id: not_ready
+              value: "not_ready"
+              brief: The node is out of rotation.
+              stability: development
+        stability: development
+        brief: The readiness state of the node.
+        note: >
+          The node MUST be `not_ready` before any check has passed, while a
+          `liveness` or `critical` check fails, and while the node shuts down.

@@ -1,0 +1,20 @@
+groups:
+  - id: registry.webitel.outbox
+    type: attribute_group
+    display_name: Webitel Outbox Attributes
+    brief: Attributes describing the outbox relay.
+    attributes:
+      - id: webitel.outbox.relay.state
+        type:
+          members:
+            - id: leader
+              value: "leader"
+              brief: The node runs the outbox relay.
+              stability: development
+            - id: follower
+              value: "follower"
+              brief: The node does not run the outbox relay.
+              stability: development
+        stability: development
+        brief: The state of the node in the outbox relay.
+        note: Only the node that holds the relay lock MUST be in the `leader` state.
