@@ -19,16 +19,20 @@ groups:
     instrument: gauge
     unit: s
 
-  - id: metric.webitel.outbox.relay.leader
+  - id: metric.webitel.outbox.relay.status
     type: metric
-    metric_name: webitel.outbox.relay.leader
+    metric_name: webitel.outbox.relay.status
     stability: development
-    brief: Whether the node runs the outbox relay.
+    brief: The current status of the node in the outbox relay.
     note: >
-      The value MUST be 1 on the node that holds the relay lock, and 0 on the
-      other nodes.
-    instrument: gauge
-    unit: "{node}"
+      A timeseries is produced for every possible value of
+      `webitel.outbox.relay.state`. The value of this metric is 1 for the
+      current state of the node, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.outbox.relay.state
+        requirement_level: required
 
   - id: metric.webitel.outbox.relay.poisoned
     type: metric

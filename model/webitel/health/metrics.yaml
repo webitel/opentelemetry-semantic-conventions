@@ -1,39 +1,43 @@
 groups:
-  - id: metric.webitel.health.ready
+  - id: metric.webitel.health.status
     type: metric
-    metric_name: webitel.health.ready
+    metric_name: webitel.health.status
     stability: development
-    brief: Whether the node is ready to take traffic.
+    brief: The current readiness status of the node.
     note: >
-      The value MUST be 1 while the node is in rotation, and 0 otherwise:
-      before any check has passed, while a `liveness` or `critical` check
-      fails, and while the node shuts down. A failing `informational` check
-      MUST NOT set the value to 0.
-    instrument: gauge
-    unit: "{node}"
+      A timeseries is produced for every possible value of
+      `webitel.health.state`. The value of this metric is 1 for the current
+      state of the node, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.health.state
+        requirement_level: required
 
-  - id: metric.webitel.health.check.state
+  - id: metric.webitel.health.check.status
     type: metric
-    metric_name: webitel.health.check.state
+    metric_name: webitel.health.check.status
     stability: development
-    brief: Whether the health check currently passes.
+    brief: The current status of the health check.
     note: >
-      The value MUST be 1 when the last result of the check is `ok`, and 0
-      otherwise, including when the check has not run yet or its result is
-      stale.
-    instrument: gauge
-    unit: "{check}"
+      A timeseries is produced for every possible value of
+      `webitel.health.check.state`. The value of this metric is 1 for the
+      current state of the check, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
     attributes:
       - ref: webitel.health.check.name
         requirement_level: required
       - ref: webitel.health.check.group
+        requirement_level: required
+      - ref: webitel.health.check.state
         requirement_level: required
 
   - id: metric.webitel.health.check.transitions
     type: metric
     metric_name: webitel.health.check.transitions
     stability: development
-    brief: "Number of transitions of a health check into the status described by the `webitel.health.check.status` attribute."
+    brief: "Number of transitions of a health check into the state described by the `webitel.health.check.state` attribute."
     note: >
       The first completed run of a check MUST be counted as a transition. A
       result becoming stale MUST NOT be counted as a transition.
@@ -44,8 +48,9 @@ groups:
         requirement_level: required
       - ref: webitel.health.check.group
         requirement_level: required
-      - ref: webitel.health.check.status
+      - ref: webitel.health.check.state
         requirement_level: required
+        note: "`unknown` MUST NOT be reported."
 
   - id: metric.webitel.health.check.duration
     type: metric
