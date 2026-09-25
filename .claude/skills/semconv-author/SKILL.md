@@ -84,6 +84,12 @@ The rules that come up most (full list with sources in `references/naming.md`):
   `.duration` histogram of the same operation already exists: its count is the
   number of occurrences.
 
+The segment after `webitel.` also names the Go package that webitel-go-kit
+generates for the metrics: `webitel.call_center.*` becomes `callcenterconv`, with
+`webitel.call_center` dropped from Go names. An abbreviation in a name (`kb`)
+needs an entry in `acronyms` in go-kit's
+`infra/otel/semconv/templates/registry/go/weaver.yaml`, or it comes out as `Kb`.
+
 When two names are both defensible, show both with the rule behind each and let
 the user pick — naming is where people care most.
 
@@ -161,6 +167,16 @@ make schema-changes     # after a rename: shows what the next release records
 and can fail on a network error, leaving `docs/` deleted — restore it with
 `git checkout -- docs` and run again. Commit `docs/` together with the model change.
 
+To check the Go names, generate the binding from this checkout into
+webitel-go-kit's git-ignored `dev/`:
+
+```bash
+make -C ../webitel-go-kit/infra/otel/semconv generate TAG=dev REGISTRY=$PWD/model
+```
+
+Deprecated conventions are not generated, so a deprecation removes the Go API
+from the next version; say so when you deprecate something.
+
 ### 8. When service code is involved
 
 If the user points at a service, compare what it emits with the model:
@@ -180,6 +196,7 @@ End with a short summary:
 - what was added or changed, per convention (name, instrument, unit, attributes);
 - which upstream conventions were reused and which were considered and rejected;
 - results of `check-policies` and `generate-all` (and `schema-changes` for renames);
+- the Go names the change produces, if you generated them;
 - decisions left to the user, and what services must change to match.
 
 ## Reference files
