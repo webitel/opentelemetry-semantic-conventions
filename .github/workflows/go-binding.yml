@@ -1,0 +1,30 @@
+name: Go binding
+
+on:
+  push:
+    tags: [ 'v[0-9]+.[0-9]+.[0-9]+' ]
+
+permissions:
+  contents: read
+
+jobs:
+  dispatch:
+    name: Dispatch
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Create Github APP token
+        id: app-token
+        uses: webitel/reusable-workflows/actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.DELIVERY_BOT_APP_ID }}
+          private-key: ${{ secrets.DELIVERY_BOT_APP_PEM }}
+          owner: webitel
+          repositories: webitel-go-kit
+
+      - name: Dispatch generate-semconv
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG: ${{ github.ref_name }}
+
+        run: gh workflow run generate-semconv.yml -R webitel/webitel-go-kit -f tag="$TAG"

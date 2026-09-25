@@ -32,6 +32,11 @@ prints the plan and waits for `y`. Pass `CONFIRM=yes` to skip the prompt.
 
 Only steps 4 and 5 leave anything behind.
 
+The pushed tag also runs [go-binding.yml](./.github/workflows/go-binding.yml),
+which has webitel-go-kit generate the Go binding for the release and open a PR
+with it. If that fails, run **Generate semconv** in webitel-go-kit by hand with
+the tag.
+
 ## Renaming something this registry defines
 
 Add the new definition, and mark the old one on the way out:
