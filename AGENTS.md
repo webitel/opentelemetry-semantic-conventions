@@ -49,6 +49,14 @@ make schema-changes   # what the next release records (renames since the last ta
 - **Never `ref:` an upstream convention that upstream has deprecated.** The
   policy in `policies/check/upstream/` rejects it.
 - **Requirement levels go on the `ref:`**, not on the attribute definition.
+- **Sensitivity goes on the attribute definition**, not on the `ref:`:
+  `annotations: {webitel: {sensitivity: pii|secret}}`. webitel-go-kit
+  generates a map from it, and its log processor redacts those attributes.
+  `policies/check/sensitivity/` rejects other classes and markings set on a
+  `ref:`.
+- **An event group's `id` is `event.<name>`**, and its name never carries a
+  dynamic value. A failure event references upstream `error.type`; the
+  default severity goes in the `note`, never a severity text.
 - **The upstream version is pinned in two places**: the `dependencies:` git
   tag and `schema_url` in `model/manifest.yaml`, and both upstream URLs in
   `.weaver.toml`. Bump them together; `make check-upstream-version` fails when
@@ -66,7 +74,7 @@ make schema-changes   # what the next release records (renames since the last ta
 - **List only telemetry a service actually emits.** The reference is meant to
   match the code.
 - **The second segment of a name is a Go package.** `webitel.<area>.*` metrics
-  go to `<area>conv` in webitel-go-kit, with underscores dropped
+  and events go to `<area>conv` in webitel-go-kit, with underscores dropped
   (`webitel.call_center.*` → `callcenterconv`) and `webitel.<area>` dropped
   from Go names. An abbreviation in a name (`kb`) needs an entry in `acronyms`
   in go-kit's `infra/otel/semconv/templates/registry/go/weaver.yaml`, or it

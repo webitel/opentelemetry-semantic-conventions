@@ -3,8 +3,15 @@
 
 # Webitel
 
+- [Events](#events)
 - [Metrics](#metrics)
 - [Attributes](#attributes)
+
+## Events
+
+| Name | Stability | Description |
+| --- | --- | --- |
+| [`webitel.outbox.relay.failed`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/events.md#webiteloutboxrelayfailed) | ![Development](https://img.shields.io/badge/-development-blue) | This event represents a failed attempt of the outbox relay to publish an outbox event to the broker. |
 
 ## Metrics
 

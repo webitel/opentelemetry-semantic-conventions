@@ -1,0 +1,19 @@
+groups:
+  - id: event.webitel.outbox.relay.failed
+    type: event
+    name: webitel.outbox.relay.failed
+    stability: development
+    brief: >
+      This event represents a failed attempt of the outbox relay to publish an
+      outbox event to the broker.
+    note: >
+      This event MUST be recorded once for every failed attempt, including the
+      last one before the outbox event is moved to the poison queue.
+
+      Instrumentations SHOULD set the severity to WARN (severity number 13)
+      when recording this event.
+    attributes:
+      - ref: error.type
+        requirement_level: required
+      - ref: messaging.destination.name
+        requirement_level: recommended
