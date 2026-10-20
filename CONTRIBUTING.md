@@ -88,8 +88,9 @@ make check-policies
 
 This runs the shared OpenTelemetry policies — naming conventions, collisions,
 backwards compatibility — alongside the ones in `policies/check/`: that every
-convention defined here is under `webitel.`, and that nothing here references an
-upstream convention upstream has deprecated.
+convention defined here is under `webitel.`, that nothing here references an
+upstream convention upstream has deprecated, and that sensitivity markings are
+valid.
 
 ## Adding an attribute
 
@@ -115,6 +116,42 @@ Requirement levels do not belong on the definition — they belong to the metric
 or span that references the attribute, because the same attribute can be
 required for one signal and optional for another.
 
+### Marking a sensitive attribute
+
+An attribute whose value must never reach telemetry as is — a phone number, a
+name, a token — is marked on its definition:
+
+```yaml
+      - id: webitel.contact.phone
+        type: string
+        stability: development
+        brief: The phone number of the contact in E.164 format.
+        note: |
+          > [!WARNING]
+          >
+          > This attribute contains sensitive (PII) information.
+        examples: ["+380441234567"]
+        annotations:
+          webitel:
+            sensitivity: pii
+```
+
+There are two classes:
+
+- `pii` — personal data. The value is replaced by a keyed pseudonym, so records
+  of the same value stay correlated.
+- `secret` — credentials and the like. Only whether a value is present is
+  recorded.
+
+webitel-go-kit generates a map of the marked attributes, and its log processor
+redacts them by name on every record, whichever code emitted it. Deprecated
+attributes stay in that map, so a deprecated attribute keeps its marking.
+
+The marking belongs to the definition, not to a `ref:`: a `ref:` inherits it,
+and one that sets its own is rejected by the policy in
+[policies/check/sensitivity/](./policies/check/sensitivity), as is any class
+other than `pii` or `secret`.
+
 ## Adding a metric
 
 Metrics go in `model/<namespace>/<area>/metrics.yaml`.
@@ -136,6 +173,44 @@ Metrics go in `model/<namespace>/<area>/metrics.yaml`.
 binding exposes the metric as a synchronous or an observable instrument is the
 binding's decision, made at its call sites — nothing about it belongs here, and
 it never reaches the generated documentation or the wire.
+
+## Adding an event
+
+An event is a log record with a name: a point-in-time occurrence, a state
+change or an outcome. Events go in `model/<namespace>/<area>/events.yaml`.
+
+```yaml
+  - id: event.webitel.outbox.relay.failed
+    type: event
+    name: webitel.outbox.relay.failed
+    stability: development
+    brief: >
+      This event represents a failed attempt of the outbox relay to publish an
+      outbox event to the broker.
+    note: >
+      This event MUST be recorded once for every failed attempt, including the
+      last one before the outbox event is moved to the poison queue.
+
+      Instrumentations SHOULD set the severity to WARN (severity number 13)
+      when recording this event.
+    attributes:
+      - ref: error.type
+        requirement_level: required
+      - ref: messaging.destination.name
+        requirement_level: recommended
+```
+
+- `name` becomes `event.name` on the record, and the group `id` is `event.`
+  followed by it. The name identifies the structure of the event, so it never
+  carries a dynamic value: those go in attributes.
+- The body of an event is only a display message. Everything a consumer reads
+  goes in attributes, referenced with `ref:` like on a metric.
+- An event that reports a failure references upstream `error.type`.
+- The default severity goes in the `note`. A severity text is never defined.
+
+webitel-go-kit generates a constructor per event in the area's Go package:
+`webitel.outbox.relay.failed` becomes `outboxconv.NewRelayFailedEvent`.
+Required attributes are its parameters, the others are options.
 
 ## Documenting something we emit but do not define
 

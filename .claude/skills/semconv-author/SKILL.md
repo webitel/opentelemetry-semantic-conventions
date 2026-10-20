@@ -85,9 +85,9 @@ The rules that come up most (full list with sources in `references/naming.md`):
   number of occurrences.
 
 The segment after `webitel.` also names the Go package that webitel-go-kit
-generates for the metrics: `webitel.call_center.*` becomes `callcenterconv`, with
-`webitel.call_center` dropped from Go names. An abbreviation in a name (`kb`)
-needs an entry in `acronyms` in go-kit's
+generates for the metrics and events: `webitel.call_center.*` becomes
+`callcenterconv`, with `webitel.call_center` dropped from Go names. An
+abbreviation in a name (`kb`) needs an entry in `acronyms` in go-kit's
 `infra/otel/semconv/templates/registry/go/weaver.yaml`, or it comes out as `Kb`.
 
 When two names are both defensible, show both with the rule behind each and let
@@ -106,6 +106,15 @@ follows the upstream status-metric design: an up-down counter named `….status`
 unit `"1"`, one timeseries per value of a complete `….state` enum, 1 for the
 current state and 0 for the others.
 
+An occurrence at a point in time (a failure, a state change, an outcome) with
+no value to aggregate is an event, not a metric. It goes in
+`model/webitel/<area>/events.yaml` with group id `event.<name>`, and its name
+never carries a dynamic value. A failure event references upstream
+`error.type`. The default severity goes in the `note` ("Instrumentations
+SHOULD set the severity to WARN (severity number 13)"); a severity text is
+never defined. `CONTRIBUTING.md` (§"Adding an event") has the example; rules
+are in `references/naming.md` §1.7.
+
 ### 4. Define attributes
 
 Registry attributes go in `model/webitel/<area>/registry.yaml`, signals reference
@@ -114,6 +123,12 @@ Keep metric attributes low-cardinality (no IDs, raw URLs, free-form messages).
 For failures use upstream `error.type` on the operation's own metric rather than a
 separate failure metric, and document the values you report. Details:
 `references/attributes.md`.
+
+An attribute that carries personal data or a credential gets the upstream PII
+warning in its `note` and `annotations: {webitel: {sensitivity: pii}}` (or
+`secret`) on its definition, never on a `ref:`. webitel-go-kit redacts marked
+attributes in logs by name; `CONTRIBUTING.md` (§"Marking a sensitive
+attribute") has the example and what each class records.
 
 ### 5. Write `brief` and `note`
 

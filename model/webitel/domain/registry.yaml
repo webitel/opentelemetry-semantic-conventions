@@ -1,0 +1,15 @@
+groups:
+  - id: registry.webitel.domain
+    type: attribute_group
+    display_name: Webitel Domain Attributes
+    brief: Attributes describing the Webitel domain (tenant).
+    attributes:
+      - id: webitel.domain.id
+        type: string
+        stability: development
+        brief: The ID of the domain (tenant) the operation belongs to.
+        note: >
+          The value MUST be the decimal domain ID taken from a verified
+          authorization context, never from client input. It is propagated in
+          W3C baggage under the same key.
+        examples: ["1", "42"]
