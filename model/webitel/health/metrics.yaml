@@ -26,8 +26,11 @@ groups:
     instrument: updowncounter
     unit: "1"
     attributes:
-      - ref: webitel.health.check.name
+      - ref: webitel.health.check.system
         requirement_level: required
+      - ref: webitel.health.check.name
+        requirement_level:
+          conditionally_required: If the check is registered with a name.
       - ref: webitel.health.check.group
         requirement_level: required
       - ref: webitel.health.check.state
@@ -44,8 +47,11 @@ groups:
     instrument: counter
     unit: "{transition}"
     attributes:
-      - ref: webitel.health.check.name
+      - ref: webitel.health.check.system
         requirement_level: required
+      - ref: webitel.health.check.name
+        requirement_level:
+          conditionally_required: If the check is registered with a name.
       - ref: webitel.health.check.group
         requirement_level: required
       - ref: webitel.health.check.state
@@ -63,7 +69,10 @@ groups:
     instrument: gauge
     unit: s
     attributes:
-      - ref: webitel.health.check.name
+      - ref: webitel.health.check.system
         requirement_level: required
+      - ref: webitel.health.check.name
+        requirement_level:
+          conditionally_required: If the check is registered with a name.
       - ref: webitel.health.check.group
         requirement_level: required
