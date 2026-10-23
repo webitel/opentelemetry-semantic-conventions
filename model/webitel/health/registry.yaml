@@ -4,15 +4,50 @@ groups:
     display_name: Webitel Health Check Attributes
     brief: Attributes describing health checks of a node.
     attributes:
-      - id: webitel.health.check.name
-        type: string
+      - id: webitel.health.check.system
+        type:
+          members:
+            - id: postgresql
+              value: "postgresql"
+              brief: "[PostgreSQL](https://www.postgresql.org/)"
+              stability: development
+            - id: redis
+              value: "redis"
+              brief: "[Redis](https://redis.io/)"
+              stability: development
+            - id: rabbitmq
+              value: "rabbitmq"
+              brief: "[RabbitMQ](https://www.rabbitmq.com/)"
+              stability: development
+            - id: grpc
+              value: "grpc"
+              brief: "[gRPC](https://grpc.io/)"
+              stability: development
+            - id: http
+              value: "http"
+              brief: "[HTTP](https://www.rfc-editor.org/rfc/rfc9110.html)"
+              stability: development
         stability: development
-        brief: The name of the health check.
+        brief: The system the health check probes.
         note: >
           A health check is a probe that the node runs in the background on its
           own schedule; its last result is cached. Reading a health check metric
-          MUST NOT trigger a run of the check.
-        examples: ["postgres", "rabbitmq", "consul"]
+          MUST NOT trigger a run of the check. A system that has a value in
+          `db.system.name`, `messaging.system` or `rpc.system.name` MUST use
+          that value. A check of a listener of the node itself SHOULD use the
+          protocol of the listener, such as `grpc` or `http`. A custom value
+          MUST be of low cardinality.
+
+      - id: webitel.health.check.name
+        type: string
+        stability: development
+        brief: The name that tells apart health checks of the same system.
+        note: >
+          Instrumentations SHOULD set the name only when a node runs more than
+          one check of the same `webitel.health.check.system`. The value MUST be
+          static: it MUST NOT contain a host, an address, a tenant or any other
+          value that varies at runtime.
+        examples: ["whatsapp", "standby"]
 
       - id: webitel.health.check.group
         type:

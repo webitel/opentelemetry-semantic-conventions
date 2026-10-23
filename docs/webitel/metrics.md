@@ -34,11 +34,14 @@
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
 | [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [1] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the health check. [2] | `postgres`; `rabbitmq`; `consul` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [2] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [3] | `whatsapp`; `standby` |
 
 **[1] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
 
-**[2] `webitel.health.check.name`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check.
+**[2] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+
+**[3] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -49,6 +52,18 @@
 | `critical` | The check tests a dependency local to the node. A failure takes the node out of rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `informational` | The check tests a shared dependency. A failure marks the node degraded and leaves it in rotation. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `liveness` | The check tests whether the process is operational. A failure takes the node out of rotation and fails its liveness probe. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.health.check.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `grpc` | [gRPC](https://grpc.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `http` | [HTTP](https://www.rfc-editor.org/rfc/rfc9110.html) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `postgresql` | [PostgreSQL](https://www.postgresql.org/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `rabbitmq` | [RabbitMQ](https://www.rabbitmq.com/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `redis` | [Redis](https://redis.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
 
 ## `webitel.health.check.status`
 
@@ -64,15 +79,18 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [3] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the health check. [4] | `postgres`; `rabbitmq`; `consul` |
+| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [4] | `liveness`; `critical`; `informational` |
 | [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [5] | `ok`; `fail`; `unknown` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [6] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [7] | `whatsapp`; `standby` |
 
-**[3] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
-
-**[4] `webitel.health.check.name`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check.
+**[4] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
 
 **[5] `webitel.health.check.state`:** A check MUST move to `fail` only after several consecutive failures, and MUST move to `ok` on the first success.
+
+**[6] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+
+**[7] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -93,6 +111,18 @@
 | `fail` | The check fails. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `ok` | The check passes. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `unknown` | The check has not run yet, or its result is stale. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.health.check.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `grpc` | [gRPC](https://grpc.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `http` | [HTTP](https://www.rfc-editor.org/rfc/rfc9110.html) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `postgresql` | [PostgreSQL](https://www.postgresql.org/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `rabbitmq` | [RabbitMQ](https://www.rabbitmq.com/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `redis` | [Redis](https://redis.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
 
 ## `webitel.health.check.transitions`
 
@@ -108,15 +138,18 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [6] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the health check. [7] | `postgres`; `rabbitmq`; `consul` |
-| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [8] | `ok`; `fail`; `unknown` |
+| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [8] | `liveness`; `critical`; `informational` |
+| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [9] | `ok`; `fail`; `unknown` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [10] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [11] | `whatsapp`; `standby` |
 
-**[6] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
+**[8] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
 
-**[7] `webitel.health.check.name`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check.
+**[9] `webitel.health.check.state`:** `unknown` MUST NOT be reported.
 
-**[8] `webitel.health.check.state`:** `unknown` MUST NOT be reported.
+**[10] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+
+**[11] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -138,6 +171,18 @@
 | `ok` | The check passes. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `unknown` | The check has not run yet, or its result is stale. | ![Development](https://img.shields.io/badge/-development-blue) |
 
+---
+
+`webitel.health.check.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `grpc` | [gRPC](https://grpc.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `http` | [HTTP](https://www.rfc-editor.org/rfc/rfc9110.html) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `postgresql` | [PostgreSQL](https://www.postgresql.org/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `rabbitmq` | [RabbitMQ](https://www.rabbitmq.com/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `redis` | [Redis](https://redis.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+
 ## `webitel.health.status`
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
@@ -152,9 +197,9 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The readiness state of the node. [9] | `ready`; `degraded`; `not_ready` |
+| [`webitel.health.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The readiness state of the node. [12] | `ready`; `degraded`; `not_ready` |
 
-**[9] `webitel.health.state`:** The node MUST be `not_ready` before any check has passed, while a `liveness` or `critical` check fails, and while the node shuts down.
+**[12] `webitel.health.state`:** The node MUST be `not_ready` before any check has passed, while a `liveness` or `critical` check fails, and while the node shuts down.
 
 ---
 
@@ -180,9 +225,9 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [10] | `pending`; `indexing`; `indexed` |
+| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [13] | `pending`; `indexing`; `indexed` |
 
-**[10] `webitel.kb.article.index.state`:** The state is that of the latest version of the article.
+**[13] `webitel.kb.article.index.state`:** The state is that of the latest version of the article.
 
 ---
 
@@ -209,9 +254,9 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.embedded`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-embedded) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | boolean | Whether the article version was embedded for vector search. [11] | `true`; `false` |
+| [`webitel.kb.article.index.embedded`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-embedded) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | boolean | Whether the article version was embedded for vector search. [14] | `true`; `false` |
 
-**[11] `webitel.kb.article.index.embedded`:** `false` for a space without vector search, where a version is only indexed for full-text search.
+**[14] `webitel.kb.article.index.embedded`:** `false` for a space without vector search, where a version is only indexed for full-text search.
 
 ## `webitel.kb.article.index.job.count`
 
@@ -227,9 +272,9 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [12] | `pending`; `indexing`; `indexed` |
+| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [15] | `pending`; `indexing`; `indexed` |
 
-**[12] `webitel.kb.article.index.state`:** Only `pending` and `failed` apply.
+**[15] `webitel.kb.article.index.state`:** Only `pending` and `failed` apply.
 
 ---
 
@@ -256,9 +301,9 @@
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Required` | string | Describes a class of error the operation ended with. [13] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Required` | string | Describes a class of error the operation ended with. [16] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
 
-**[13] `error.type`:** One of: `envelope` — the message is not a valid indexing job; `permanent` — a retry cannot fix the failure; `exhausted` — the retries ran out; `unexpected` — any other failure.
+**[16] `error.type`:** One of: `envelope` — the message is not a valid indexing job; `permanent` — a retry cannot fix the failure; `exhausted` — the retries ran out; `unexpected` — any other failure.
 
 ---
 
@@ -282,9 +327,9 @@
 | --- | --- | --- | --- | --- | --- |
 | [`webitel.kb.rerank.model`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-model) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the model a rerank request is made to, as named by the provider. | `rerank-v3.5`; `bge-reranker-v2-m3` |
 | [`webitel.kb.rerank.provider`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-provider) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the rerank provider. | `cohere`; `bge-reranker` |
-| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the call failed. | string | Describes a class of error the operation ended with. [14] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the call failed. | string | Describes a class of error the operation ended with. [17] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
 
-**[14] `error.type`:** The `error.type` SHOULD be predictable, and SHOULD have low cardinality.
+**[17] `error.type`:** The `error.type` SHOULD be predictable, and SHOULD have low cardinality.
 
 When `error.type` is set to a type (e.g., an exception type), its
 canonical class name identifying the type within the artifact SHOULD be used.
@@ -368,9 +413,9 @@ it's RECOMMENDED to:
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.outbox.relay.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-outbox-relay-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the node in the outbox relay. [15] | `leader`; `follower` |
+| [`webitel.outbox.relay.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-outbox-relay-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the node in the outbox relay. [18] | `leader`; `follower` |
 
-**[15] `webitel.outbox.relay.state`:** Only the node that holds the relay lock MUST be in the `leader` state.
+**[18] `webitel.outbox.relay.state`:** Only the node that holds the relay lock MUST be in the `leader` state.
 
 ---
 
