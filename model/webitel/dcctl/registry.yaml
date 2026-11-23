@@ -1,0 +1,426 @@
+groups:
+  - id: registry.webitel.dcctl
+    type: attribute_group
+    display_name: Webitel Datacenter Controller Attributes
+    brief: Attributes describing the state of datacenters and datacenter switch operations managed by dcctl.
+    attributes:
+      - id: webitel.dcctl.datacenter.state
+        type:
+          members:
+            - id: unreachable
+              value: "unreachable"
+              brief: No source of the datacenter is reachable.
+              stability: development
+            - id: uninitialized
+              value: "uninitialized"
+              brief: No voter holds the coordination state.
+              stability: development
+            - id: active
+              value: "active"
+              brief: The datacenter is the active datacenter of the effective state.
+              stability: development
+            - id: split_brain
+              value: "split_brain"
+              brief: The datacenter is not active, and a managed job of it is not stopped.
+              stability: development
+            - id: db_split
+              value: "db_split"
+              brief: The datacenter is not active, and its Patroni leader is a primary.
+              stability: development
+            - id: stale
+              value: "stale"
+              brief: The voter of the datacenter holds a generation lower than the effective one.
+              stability: development
+            - id: needs_recovery
+              value: "needs_recovery"
+              brief: The datacenter is marked as needing recovery in the effective state.
+              stability: development
+            - id: standby
+              value: "standby"
+              brief: The datacenter is not active, and none of the other states apply.
+              stability: development
+        stability: development
+        brief: The state of the datacenter.
+        note: >
+          The state is the first of the values, in the order listed, whose
+          condition holds. A datacenter is in exactly one state. A condition
+          whose source is not reachable is skipped.
+
+      - id: webitel.dcctl.voter.name
+        type: string
+        stability: development
+        brief: The name of the voter.
+        note: >
+          The value MUST be the name of the datacenter whose Consul is the
+          voter, or `arbiter` for the arbiter.
+        examples: ["dc_a", "dc_b", "arbiter"]
+
+      - id: webitel.dcctl.voter.state
+        type:
+          members:
+            - id: ok
+              value: "ok"
+              brief: The voter is reachable and holds the coordination state.
+              stability: development
+            - id: unreachable
+              value: "unreachable"
+              brief: The voter is not reachable.
+              stability: development
+            - id: uninitialized
+              value: "uninitialized"
+              brief: The voter is reachable and holds no coordination state.
+              stability: development
+        stability: development
+        brief: The state of the voter.
+
+      - id: webitel.dcctl.quorum.mode
+        type:
+          members:
+            - id: quorum
+              value: "quorum"
+              brief: A majority of voters is reachable.
+              stability: development
+            - id: forced_only
+              value: "forced_only"
+              brief: A majority of voters is not reachable, and only a forced operation can change the state.
+              stability: development
+        stability: development
+        brief: The mode in which the coordination state can be changed.
+
+      - id: webitel.dcctl.alarm.name
+        type:
+          members:
+            - id: conflict
+              value: "conflict"
+              brief: Two valid records have the same generation and different active datacenters.
+              stability: development
+            - id: uncommitted
+              value: "uncommitted"
+              brief: A voter holds a record with a generation above the effective one, without a majority and without `forced`.
+              stability: development
+            - id: stale
+              value: "stale"
+              brief: The voter of a datacenter holds a generation lower than the effective one.
+              stability: development
+            - id: split_brain
+              value: "split_brain"
+              brief: A managed job of a datacenter that is not active is not stopped.
+              stability: development
+            - id: db_split
+              value: "db_split"
+              brief: The Patroni leader of a datacenter that is not active is a primary.
+              stability: development
+            - id: multiple_primaries
+              value: "multiple_primaries"
+              brief: More than one primary is reachable across all datacenters.
+              stability: development
+            - id: db_primary_missing
+              value: "db_primary_missing"
+              brief: The active datacenter has no primary.
+              stability: development
+            - id: datacenter_unreachable
+              value: "datacenter_unreachable"
+              brief: The datacenter has been unreachable longer than the degraded threshold.
+              stability: development
+            - id: db_leader_mismatch
+              value: "db_leader_mismatch"
+              brief: The datacenter of the Patroni leader is not the active datacenter.
+              stability: development
+            - id: lease_lost
+              value: "lease_lost"
+              brief: The lease is not renewed, or does not match the effective state.
+              stability: development
+            - id: apps_degraded
+              value: "apps_degraded"
+              brief: A managed job of the active datacenter is not healthy.
+              stability: development
+            - id: db_degraded
+              value: "db_degraded"
+              brief: A Patroni member of the datacenter is unreachable or unusable, or Patroni is paused.
+              stability: development
+            - id: standby_not_following
+              value: "standby_not_following"
+              brief: The Patroni leader of a datacenter that is not active does not follow the active datacenter.
+              stability: development
+            - id: voter_unreachable
+              value: "voter_unreachable"
+              brief: The voter has been unreachable longer than the degraded threshold.
+              stability: development
+            - id: quorum_lost
+              value: "quorum_lost"
+              brief: Fewer voters than a majority are reachable.
+              stability: development
+            - id: arbiter_uninitialized
+              value: "arbiter_uninitialized"
+              brief: The arbiter is reachable and its storage is empty.
+              stability: development
+            - id: operation_interrupted
+              value: "operation_interrupted"
+              brief: An operation is in the `interrupted` state.
+              stability: development
+        stability: development
+        brief: The identifier of the alarm.
+        note: >
+          The value is the `id` of an alarm of the dcctl alarm catalog.
+
+      - id: webitel.dcctl.patroni.role
+        type:
+          members:
+            - id: primary
+              value: "primary"
+              brief: The member is a primary.
+              stability: development
+            - id: standby_leader
+              value: "standby_leader"
+              brief: The member is the leader of a standby cluster.
+              stability: development
+            - id: replica
+              value: "replica"
+              brief: The member is a replica.
+              stability: development
+            - id: other
+              value: "other"
+              brief: The member has a role other than the listed ones.
+              stability: development
+            - id: unknown
+              value: "unknown"
+              brief: The role is not known because the member is not reachable.
+              stability: development
+        stability: development
+        brief: The Patroni role of a cluster member.
+
+      - id: webitel.dcctl.job.state
+        type:
+          members:
+            - id: healthy
+              value: "healthy"
+              brief: The job is running and healthy.
+              stability: development
+            - id: unhealthy
+              value: "unhealthy"
+              brief: The job is not stopped and is not healthy, including while it starts.
+              stability: development
+            - id: stopping
+              value: "stopping"
+              brief: The job is stopped and has allocations that are still pending, running or unknown.
+              stability: development
+            - id: stopped
+              value: "stopped"
+              brief: The job is stopped and has no allocations left.
+              stability: development
+        stability: development
+        brief: The state of a job managed by dcctl.
+
+      - id: webitel.dcctl.job.stage
+        type: int
+        stability: development
+        brief: The start stage of a job managed by dcctl.
+        note: >
+          The value is the `dcctl_stage` of the job. Jobs start in ascending
+          order of the stage and stop in descending order.
+        examples: [1, 2, 3]
+
+      - id: webitel.dcctl.source.system
+        type:
+          members:
+            - id: consul
+              value: "consul"
+              brief: "[Consul](https://www.consul.io/)"
+              stability: development
+            - id: nomad
+              value: "nomad"
+              brief: "[Nomad](https://www.nomadproject.io/)"
+              stability: development
+            - id: patroni
+              value: "patroni"
+              brief: "[Patroni](https://patroni.readthedocs.io/)"
+              stability: development
+            - id: arbiter
+              value: "arbiter"
+              brief: The dcctl arbiter.
+              stability: development
+        stability: development
+        brief: The system dcctl reads the state from.
+
+      - id: webitel.dcctl.source.state
+        type:
+          members:
+            - id: ok
+              value: "ok"
+              brief: All the queries to the source succeed.
+              stability: development
+            - id: partial
+              value: "partial"
+              brief: Some of the queries to the source fail.
+              stability: development
+            - id: unreachable
+              value: "unreachable"
+              brief: The source is not reachable.
+              stability: development
+        stability: development
+        brief: The state of a source of dcctl.
+
+      - id: webitel.dcctl.operation.type
+        type:
+          members:
+            - id: switch
+              value: "switch"
+              brief: Planned switch of the active datacenter.
+              stability: development
+            - id: failover
+              value: "failover"
+              brief: Forced switch of the active datacenter.
+              stability: development
+            - id: demote
+              value: "demote"
+              brief: Demotion of the database of a datacenter to a standby.
+              stability: development
+            - id: repoint
+              value: "repoint"
+              brief: Repointing of the standby database of a datacenter to the active datacenter.
+              stability: development
+            - id: mark_recovered
+              value: "mark_recovered"
+              brief: Removal of a datacenter from the datacenters that need recovery.
+              stability: development
+            - id: resolve_conflict
+              value: "resolve_conflict"
+              brief: Resolution of a conflict between records of the coordination state.
+              stability: development
+            - id: initialize
+              value: "initialize"
+              brief: Initialization of the coordination state.
+              stability: development
+            - id: initialize_arbiter
+              value: "initialize_arbiter"
+              brief: Initialization of the arbiter.
+              stability: development
+            - id: sync_apps
+              value: "sync_apps"
+              brief: Synchronization of managed jobs with the active datacenter.
+              stability: development
+        stability: development
+        brief: The type of the operation.
+
+      - id: webitel.dcctl.operation.state
+        type:
+          members:
+            - id: running
+              value: "running"
+              brief: The operation is in progress.
+              stability: development
+            - id: succeeded
+              value: "succeeded"
+              brief: The operation completed.
+              stability: development
+            - id: failed
+              value: "failed"
+              brief: The operation failed.
+              stability: development
+            - id: interrupted
+              value: "interrupted"
+              brief: The operation was interrupted and waits to be resumed or abandoned.
+              stability: development
+            - id: abandoned
+              value: "abandoned"
+              brief: The operation was abandoned.
+              stability: development
+        stability: development
+        brief: The state of the operation.
+
+      - id: webitel.dcctl.operation.mode
+        type:
+          members:
+            - id: quorum
+              value: "quorum"
+              brief: The operation changes the state with a majority of voters.
+              stability: development
+            - id: forced
+              value: "forced"
+              brief: The operation changes the state without a majority of voters.
+              stability: development
+        stability: development
+        brief: The mode in which the operation changes the coordination state.
+
+      - id: webitel.dcctl.step.type
+        type:
+          members:
+            - id: apps_preflight
+              value: "apps_preflight"
+              brief: The managed jobs of the datacenter are checked before the operation changes them.
+              stability: development
+            - id: apps_stop
+              value: "apps_stop"
+              brief: The managed jobs of a stage are stopped.
+              stability: development
+            - id: apps_start
+              value: "apps_start"
+              brief: The managed jobs of a stage are started.
+              stability: development
+            - id: generation
+              value: "generation"
+              brief: The generation of the coordination state is changed.
+              stability: development
+            - id: verify
+              value: "verify"
+              brief: The result of the operation is verified.
+              stability: development
+            - id: patroni_demote
+              value: "patroni_demote"
+              brief: The Patroni cluster of the datacenter is demoted to a standby.
+              stability: development
+            - id: patroni_catchup
+              value: "patroni_catchup"
+              brief: The standby waits to catch up with the primary.
+              stability: development
+            - id: patroni_no_primary
+              value: "patroni_no_primary"
+              brief: The step waits until the datacenter has no primary.
+              stability: development
+            - id: patroni_promote
+              value: "patroni_promote"
+              brief: The Patroni cluster of the datacenter is promoted.
+              stability: development
+            - id: patroni_repoint
+              value: "patroni_repoint"
+              brief: The standby cluster is pointed to the active datacenter.
+              stability: development
+            - id: patroni_follow
+              value: "patroni_follow"
+              brief: The standby cluster starts to follow the active datacenter.
+              stability: development
+            - id: patroni_switchover
+              value: "patroni_switchover"
+              brief: Patroni switches the leader over to the target datacenter.
+              stability: development
+        stability: development
+        brief: The type of the step of an operation.
+        note: >
+          The stage of the managed jobs a step stops or starts is not part of
+          the value, it is set in `webitel.dcctl.job.stage`.
+
+      - id: webitel.dcctl.step.state
+        type:
+          members:
+            - id: pending
+              value: "pending"
+              brief: The step has not started.
+              stability: development
+            - id: running
+              value: "running"
+              brief: The step is in progress.
+              stability: development
+            - id: succeeded
+              value: "succeeded"
+              brief: The step completed.
+              stability: development
+            - id: failed
+              value: "failed"
+              brief: The step failed.
+              stability: development
+            - id: skipped
+              value: "skipped"
+              brief: The step was skipped.
+              stability: development
+        stability: development
+        brief: The state of the step of an operation.

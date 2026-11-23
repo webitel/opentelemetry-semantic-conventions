@@ -1,0 +1,296 @@
+groups:
+  - id: metric.webitel.dcctl.generation
+    type: metric
+    metric_name: webitel.dcctl.generation
+    stability: development
+    brief: The effective generation of the coordination state.
+    instrument: gauge
+    unit: "{generation}"
+
+  - id: metric.webitel.dcctl.voter.generation
+    type: metric
+    metric_name: webitel.dcctl.voter.generation
+    stability: development
+    brief: The generation held by a voter.
+    note: >
+      This metric MUST NOT be reported for a voter that is not reachable or
+      holds no coordination state.
+    instrument: gauge
+    unit: "{generation}"
+    attributes:
+      - ref: webitel.dcctl.voter.name
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.voter.status
+    type: metric
+    metric_name: webitel.dcctl.voter.status
+    stability: development
+    brief: The current status of the voter.
+    note: >
+      A timeseries is produced for every possible value of
+      `webitel.dcctl.voter.state`. The value of this metric is 1 for the
+      current state of the voter, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.dcctl.voter.name
+        requirement_level: required
+      - ref: webitel.dcctl.voter.state
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.quorum.status
+    type: metric
+    metric_name: webitel.dcctl.quorum.status
+    stability: development
+    brief: The current status of the quorum.
+    note: >
+      A timeseries is produced for every possible value of
+      `webitel.dcctl.quorum.mode`. The value of this metric is 1 for the
+      current mode, and 0 for the other modes.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.dcctl.quorum.mode
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.lease.age
+    type: metric
+    metric_name: webitel.dcctl.lease.age
+    stability: development
+    brief: Time since the counter of the lease last changed.
+    note: >
+      The time MUST be measured with the monotonic clock of the instance that
+      reports the metric.
+    instrument: gauge
+    unit: s
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the datacenter that holds the lease.
+
+  - id: metric.webitel.dcctl.datacenter.status
+    type: metric
+    metric_name: webitel.dcctl.datacenter.status
+    stability: development
+    brief: The current status of the datacenter.
+    note: >
+      A timeseries is produced for every possible value of
+      `webitel.dcctl.datacenter.state`. The value of this metric is 1 for the
+      current state of the datacenter, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+      - ref: webitel.dcctl.datacenter.state
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.alarm.count
+    type: metric
+    metric_name: webitel.dcctl.alarm.count
+    stability: development
+    brief: Number of alarms that are currently raised.
+    instrument: updowncounter
+    unit: "{alarm}"
+    attributes:
+      - ref: webitel.dcctl.alarm.name
+        requirement_level: required
+      - ref: webitel.datacenter.name
+        requirement_level:
+          conditionally_required: If the alarm applies to a datacenter.
+        brief: The name of the observed datacenter.
+      - ref: webitel.dcctl.voter.name
+        requirement_level:
+          conditionally_required: If the alarm applies to a voter.
+
+  - id: metric.webitel.dcctl.patroni.member.count
+    type: metric
+    metric_name: webitel.dcctl.patroni.member.count
+    stability: development
+    brief: "Number of Patroni members of the datacenter that currently have the role described by the `webitel.dcctl.patroni.role` attribute."
+    instrument: updowncounter
+    unit: "{member}"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+      - ref: webitel.dcctl.patroni.role
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.patroni.timeline
+    type: metric
+    metric_name: webitel.dcctl.patroni.timeline
+    stability: development
+    brief: The timeline of the Patroni leader of the datacenter.
+    note: >
+      For a cluster that spans datacenters, the value is the largest timeline
+      of the members of the datacenter.
+    instrument: gauge
+    unit: "{timeline}"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+
+  - id: metric.webitel.dcctl.patroni.wal.position
+    type: metric
+    metric_name: webitel.dcctl.patroni.wal.position
+    stability: development
+    brief: The WAL position of the Patroni leader of the datacenter.
+    note: >
+      The value is the LSN as a byte offset: the current WAL location of a
+      primary, and the received WAL location of a standby leader.
+    instrument: gauge
+    unit: By
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+
+  - id: metric.webitel.dcctl.patroni.lag
+    type: metric
+    metric_name: webitel.dcctl.patroni.lag
+    stability: development
+    brief: The replication lag of the datacenter that is not active.
+    note: >
+      The value is the distance between the WAL position of the primary of the
+      active datacenter and the received WAL position of the Patroni leader of
+      the datacenter. For a cluster that spans datacenters, the value is the
+      smallest lag of the members of the datacenter. This metric MUST NOT be
+      reported for the active datacenter.
+    instrument: gauge
+    unit: By
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+
+  - id: metric.webitel.dcctl.patroni.divergence
+    type: metric
+    metric_name: webitel.dcctl.patroni.divergence
+    stability: development
+    brief: The size of the data of the datacenter that diverged from the active datacenter.
+    note: >
+      The value is the distance between the WAL position of the datacenter and
+      the point where its timeline diverged. This metric MUST NOT be reported
+      for a datacenter that did not diverge.
+    instrument: gauge
+    unit: By
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+
+  - id: metric.webitel.dcctl.job.count
+    type: metric
+    metric_name: webitel.dcctl.job.count
+    stability: development
+    brief: "Number of managed jobs that are currently in the state described by the `webitel.dcctl.job.state` attribute."
+    instrument: updowncounter
+    unit: "{job}"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the observed datacenter.
+      - ref: webitel.dcctl.job.stage
+        requirement_level: required
+      - ref: webitel.dcctl.job.state
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.source.status
+    type: metric
+    metric_name: webitel.dcctl.source.status
+    stability: development
+    brief: The current status of the source.
+    note: >
+      A timeseries is produced for every possible value of
+      `webitel.dcctl.source.state`. The value of this metric is 1 for the
+      current state of the source, and 0 for the other states.
+    instrument: updowncounter
+    unit: "1"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level:
+          conditionally_required: Unless the source is the arbiter.
+        brief: The name of the observed datacenter.
+      - ref: webitel.dcctl.source.system
+        requirement_level: required
+      - ref: webitel.dcctl.source.state
+        requirement_level: required
+
+  - id: metric.webitel.dcctl.collect.duration
+    type: metric
+    metric_name: webitel.dcctl.collect.duration
+    stability: development
+    brief: Duration of the last completed collection cycle.
+    note: >
+      This metric MUST NOT be reported before the first cycle completes. A
+      cycle in progress MUST NOT update the value.
+    instrument: gauge
+    unit: s
+
+  - id: metric.webitel.dcctl.operation.duration
+    type: metric
+    metric_name: webitel.dcctl.operation.duration
+    stability: development
+    brief: Duration of operations, from creation to the end state.
+    note: >
+      This metric MUST be recorded once per operation, by the instance that
+      leads it, when the operation reaches `succeeded`, `failed` or
+      `abandoned`.
+    instrument: histogram
+    unit: s
+    attributes:
+      - ref: webitel.dcctl.operation.type
+        requirement_level: required
+      - ref: webitel.dcctl.operation.state
+        requirement_level: required
+        note: "MUST be `succeeded`, `failed` or `abandoned`."
+      - ref: webitel.dcctl.operation.mode
+        requirement_level: required
+        note: The mode of the operation when it reaches the end state.
+
+  - id: metric.webitel.dcctl.step.duration
+    type: metric
+    metric_name: webitel.dcctl.step.duration
+    stability: development
+    brief: Duration of the steps of operations.
+    note: >
+      This metric MUST be recorded once per step, by the instance that leads
+      the operation, when the step reaches `succeeded`, `failed` or
+      `skipped`.
+    instrument: histogram
+    unit: s
+    attributes:
+      - ref: webitel.dcctl.operation.type
+        requirement_level: required
+      - ref: webitel.dcctl.step.type
+        requirement_level: required
+      - ref: webitel.dcctl.job.stage
+        requirement_level:
+          conditionally_required: If the step stops or starts managed jobs.
+      - ref: webitel.dcctl.step.state
+        requirement_level: required
+        note: "MUST be `succeeded`, `failed` or `skipped`."
+
+  - id: metric.webitel.dcctl.fencing.stops
+    type: metric
+    metric_name: webitel.dcctl.fencing.stops
+    stability: development
+    brief: Number of fencing stops of the datacenter of the instance.
+    note: >
+      This metric MUST be recorded once per stop, when the stop completes or
+      fails.
+    instrument: counter
+    unit: "{stop}"
+    attributes:
+      - ref: webitel.datacenter.name
+        requirement_level: required
+        brief: The name of the datacenter of the instance.
+      - ref: error.type
+        requirement_level:
+          conditionally_required: If the stop failed.
+        note: >
+          The value is `timeout` if the managed jobs did not stop within the
+          stop timeout, and `_OTHER` otherwise.
