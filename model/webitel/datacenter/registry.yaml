@@ -1,0 +1,14 @@
+groups:
+  - id: registry.webitel.datacenter
+    type: attribute_group
+    display_name: Webitel Datacenter Attributes
+    brief: Attributes describing a datacenter of a Webitel installation.
+    attributes:
+      - id: webitel.datacenter.name
+        type: string
+        stability: development
+        brief: The name of the datacenter.
+        note: >
+          The value MUST be the name of the datacenter as the deployment is
+          configured with it.
+        examples: ["dc_a", "dc_b"]
