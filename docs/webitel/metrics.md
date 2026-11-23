@@ -5,6 +5,24 @@
 
 | Name | Stability | Description |
 | --- | --- | --- |
+| [`webitel.dcctl.alarm.count`](#webiteldcctlalarmcount) | ![Development](https://img.shields.io/badge/-development-blue) | Number of alarms that are currently raised. |
+| [`webitel.dcctl.collect.duration`](#webiteldcctlcollectduration) | ![Development](https://img.shields.io/badge/-development-blue) | Duration of the last completed collection cycle. |
+| [`webitel.dcctl.datacenter.status`](#webiteldcctldatacenterstatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the datacenter. |
+| [`webitel.dcctl.fencing.stops`](#webiteldcctlfencingstops) | ![Development](https://img.shields.io/badge/-development-blue) | Number of fencing stops of the datacenter of the instance. |
+| [`webitel.dcctl.generation`](#webiteldcctlgeneration) | ![Development](https://img.shields.io/badge/-development-blue) | The effective generation of the coordination state. |
+| [`webitel.dcctl.job.count`](#webiteldcctljobcount) | ![Development](https://img.shields.io/badge/-development-blue) | Number of managed jobs that are currently in the state described by the `webitel.dcctl.job.state` attribute. |
+| [`webitel.dcctl.lease.age`](#webiteldcctlleaseage) | ![Development](https://img.shields.io/badge/-development-blue) | Time since the counter of the lease last changed. |
+| [`webitel.dcctl.operation.duration`](#webiteldcctloperationduration) | ![Development](https://img.shields.io/badge/-development-blue) | Duration of operations, from creation to the end state. |
+| [`webitel.dcctl.patroni.divergence`](#webiteldcctlpatronidivergence) | ![Development](https://img.shields.io/badge/-development-blue) | The size of the data of the datacenter that diverged from the active datacenter. |
+| [`webitel.dcctl.patroni.lag`](#webiteldcctlpatronilag) | ![Development](https://img.shields.io/badge/-development-blue) | The replication lag of the datacenter that is not active. |
+| [`webitel.dcctl.patroni.member.count`](#webiteldcctlpatronimembercount) | ![Development](https://img.shields.io/badge/-development-blue) | Number of Patroni members of the datacenter that currently have the role described by the `webitel.dcctl.patroni.role` attribute. |
+| [`webitel.dcctl.patroni.timeline`](#webiteldcctlpatronitimeline) | ![Development](https://img.shields.io/badge/-development-blue) | The timeline of the Patroni leader of the datacenter. |
+| [`webitel.dcctl.patroni.wal.position`](#webiteldcctlpatroniwalposition) | ![Development](https://img.shields.io/badge/-development-blue) | The WAL position of the Patroni leader of the datacenter. |
+| [`webitel.dcctl.quorum.status`](#webiteldcctlquorumstatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the quorum. |
+| [`webitel.dcctl.source.status`](#webiteldcctlsourcestatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the source. |
+| [`webitel.dcctl.step.duration`](#webiteldcctlstepduration) | ![Development](https://img.shields.io/badge/-development-blue) | Duration of the steps of operations. |
+| [`webitel.dcctl.voter.generation`](#webiteldcctlvotergeneration) | ![Development](https://img.shields.io/badge/-development-blue) | The generation held by a voter. |
+| [`webitel.dcctl.voter.status`](#webiteldcctlvoterstatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the voter. |
 | [`webitel.health.check.duration`](#webitelhealthcheckduration) | ![Development](https://img.shields.io/badge/-development-blue) | Duration of the last completed run of a health check. |
 | [`webitel.health.check.status`](#webitelhealthcheckstatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the health check. |
 | [`webitel.health.check.transitions`](#webitelhealthchecktransitions) | ![Development](https://img.shields.io/badge/-development-blue) | Number of transitions of a health check into the state described by the `webitel.health.check.state` attribute. |
@@ -19,29 +37,556 @@
 | [`webitel.outbox.relay.poisoned`](#webiteloutboxrelaypoisoned) | ![Development](https://img.shields.io/badge/-development-blue) | Number of outbox events moved to the poison queue after the relay ran out of retries. |
 | [`webitel.outbox.relay.status`](#webiteloutboxrelaystatus) | ![Development](https://img.shields.io/badge/-development-blue) | The current status of the node in the outbox relay. |
 
-## `webitel.health.check.duration`
+## `webitel.dcctl.alarm.count`
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.health.check.duration` | Gauge | `s` | Duration of the last completed run of a health check. [1] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.dcctl.alarm.count` | UpDownCounter | `{alarm}` | Number of alarms that are currently raised. | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
-
-**[1]:** This metric MUST NOT be reported before the first run of the check completes. A run in progress MUST NOT update the value.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [1] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [2] | `postgresql`; `redis`; `rabbitmq` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [3] | `whatsapp`; `standby` |
+| [`webitel.dcctl.alarm.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-alarm-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The identifier of the alarm. [1] | `conflict`; `uncommitted`; `stale` |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the alarm applies to a datacenter. | string | The name of the observed datacenter. [2] | `dc_a`; `dc_b` |
+| [`webitel.dcctl.voter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-voter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the alarm applies to a voter. | string | The name of the voter. [3] | `dc_a`; `dc_b`; `arbiter` |
 
-**[1] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
+**[1] `webitel.dcctl.alarm.name`:** The value is the `id` of an alarm of the dcctl alarm catalog.
 
-**[2] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+**[2] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
 
-**[3] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
+**[3] `webitel.dcctl.voter.name`:** The value MUST be the name of the datacenter whose Consul is the voter, or `arbiter` for the arbiter.
+
+---
+
+`webitel.dcctl.alarm.name` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `apps_degraded` | A managed job of the active datacenter is not healthy. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `arbiter_uninitialized` | The arbiter is reachable and its storage is empty. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `conflict` | Two valid records have the same generation and different active datacenters. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `datacenter_unreachable` | The datacenter has been unreachable longer than the degraded threshold. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `db_degraded` | A Patroni member of the datacenter is unreachable or unusable, or Patroni is paused. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `db_leader_mismatch` | The datacenter of the Patroni leader is not the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `db_primary_missing` | The active datacenter has no primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `db_split` | The Patroni leader of a datacenter that is not active is a primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `lease_lost` | The lease is not renewed, or does not match the effective state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `multiple_primaries` | More than one primary is reachable across all datacenters. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `operation_interrupted` | An operation is in the `interrupted` state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `quorum_lost` | Fewer voters than a majority are reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `split_brain` | A managed job of a datacenter that is not active is not stopped. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `stale` | The voter of a datacenter holds a generation lower than the effective one. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `standby_not_following` | The Patroni leader of a datacenter that is not active does not follow the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `uncommitted` | A voter holds a record with a generation above the effective one, without a majority and without `forced`. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `voter_unreachable` | The voter has been unreachable longer than the degraded threshold. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.collect.duration`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.collect.duration` | Gauge | `s` | Duration of the last completed collection cycle. [1] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[1]:** This metric MUST NOT be reported before the first cycle completes. A cycle in progress MUST NOT update the value.
+
+
+
+## `webitel.dcctl.datacenter.status`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.datacenter.status` | UpDownCounter | `1` | The current status of the datacenter. [2] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[2]:** A timeseries is produced for every possible value of `webitel.dcctl.datacenter.state`. The value of this metric is 1 for the current state of the datacenter, and 0 for the other states.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [4] | `dc_a`; `dc_b` |
+| [`webitel.dcctl.datacenter.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-datacenter-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the datacenter. [5] | `unreachable`; `uninitialized`; `active` |
+
+**[4] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+**[5] `webitel.dcctl.datacenter.state`:** The state is the first of the values, in the order listed, whose condition holds. A datacenter is in exactly one state. A condition whose source is not reachable is skipped.
+
+---
+
+`webitel.dcctl.datacenter.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `active` | The datacenter is the active datacenter of the effective state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `db_split` | The datacenter is not active, and its Patroni leader is a primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `needs_recovery` | The datacenter is marked as needing recovery in the effective state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `split_brain` | The datacenter is not active, and a managed job of it is not stopped. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `stale` | The voter of the datacenter holds a generation lower than the effective one. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `standby` | The datacenter is not active, and none of the other states apply. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `uninitialized` | No voter holds the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `unreachable` | No source of the datacenter is reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.fencing.stops`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.fencing.stops` | Counter | `{stop}` | Number of fencing stops of the datacenter of the instance. [3] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[3]:** This metric MUST be recorded once per stop, when the stop completes or fails.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the datacenter of the instance. [6] | `dc_a`; `dc_b` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the stop failed. | string | Describes a class of error the operation ended with. [7] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+
+**[6] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+**[7] `error.type`:** The value is `timeout` if the managed jobs did not stop within the stop timeout, and `_OTHER` otherwise.
+
+---
+
+`error.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `_OTHER` | A fallback error value to be used when the instrumentation doesn't define a custom value. | ![Stable](https://img.shields.io/badge/-stable-lightgreen) |
+
+## `webitel.dcctl.generation`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.generation` | Gauge | `{generation}` | The effective generation of the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+
+
+## `webitel.dcctl.job.count`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.job.count` | UpDownCounter | `{job}` | Number of managed jobs that are currently in the state described by the `webitel.dcctl.job.state` attribute. | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [8] | `dc_a`; `dc_b` |
+| [`webitel.dcctl.job.stage`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-job-stage) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | int | The start stage of a job managed by dcctl. [9] | `1`; `2`; `3` |
+| [`webitel.dcctl.job.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-job-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of a job managed by dcctl. | `healthy`; `unhealthy`; `stopping` |
+
+**[8] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+**[9] `webitel.dcctl.job.stage`:** The value is the `dcctl_stage` of the job. Jobs start in ascending order of the stage and stop in descending order.
+
+---
+
+`webitel.dcctl.job.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `healthy` | The job is running and healthy. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `stopped` | The job is stopped and has no allocations left. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `stopping` | The job is stopped and has allocations that are still pending, running or unknown. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `unhealthy` | The job is not stopped and is not healthy, including while it starts. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.lease.age`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.lease.age` | Gauge | `s` | Time since the counter of the lease last changed. [4] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[4]:** The time MUST be measured with the monotonic clock of the instance that reports the metric.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the datacenter that holds the lease. [10] | `dc_a`; `dc_b` |
+
+**[10] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+## `webitel.dcctl.operation.duration`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.operation.duration` | Histogram | `s` | Duration of operations, from creation to the end state. [5] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[5]:** This metric MUST be recorded once per operation, by the instance that leads it, when the operation reaches `succeeded`, `failed` or `abandoned`.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.operation.mode`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-operation-mode) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The mode in which the operation changes the coordination state. [11] | `quorum`; `forced` |
+| [`webitel.dcctl.operation.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-operation-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the operation. [12] | `running`; `succeeded`; `failed` |
+| [`webitel.dcctl.operation.type`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-operation-type) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The type of the operation. | `switch`; `failover`; `demote` |
+
+**[11] `webitel.dcctl.operation.mode`:** The mode of the operation when it reaches the end state.
+
+**[12] `webitel.dcctl.operation.state`:** MUST be `succeeded`, `failed` or `abandoned`.
+
+---
+
+`webitel.dcctl.operation.mode` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `forced` | The operation changes the state without a majority of voters. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `quorum` | The operation changes the state with a majority of voters. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.dcctl.operation.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `abandoned` | The operation was abandoned. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `failed` | The operation failed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `interrupted` | The operation was interrupted and waits to be resumed or abandoned. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `running` | The operation is in progress. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `succeeded` | The operation completed. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.dcctl.operation.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `demote` | Demotion of the database of a datacenter to a standby. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `failover` | Forced switch of the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `initialize` | Initialization of the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `initialize_arbiter` | Initialization of the arbiter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `mark_recovered` | Removal of a datacenter from the datacenters that need recovery. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `repoint` | Repointing of the standby database of a datacenter to the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `resolve_conflict` | Resolution of a conflict between records of the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `switch` | Planned switch of the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `sync_apps` | Synchronization of managed jobs with the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.patroni.divergence`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.patroni.divergence` | Gauge | `By` | The size of the data of the datacenter that diverged from the active datacenter. [6] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[6]:** The value is the distance between the WAL position of the datacenter and the point where its timeline diverged. This metric MUST NOT be reported for a datacenter that did not diverge.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [13] | `dc_a`; `dc_b` |
+
+**[13] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+## `webitel.dcctl.patroni.lag`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.patroni.lag` | Gauge | `By` | The replication lag of the datacenter that is not active. [7] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[7]:** The value is the distance between the WAL position of the primary of the active datacenter and the received WAL position of the Patroni leader of the datacenter. For a cluster that spans datacenters, the value is the smallest lag of the members of the datacenter. This metric MUST NOT be reported for the active datacenter.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [14] | `dc_a`; `dc_b` |
+
+**[14] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+## `webitel.dcctl.patroni.member.count`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.patroni.member.count` | UpDownCounter | `{member}` | Number of Patroni members of the datacenter that currently have the role described by the `webitel.dcctl.patroni.role` attribute. | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [15] | `dc_a`; `dc_b` |
+| [`webitel.dcctl.patroni.role`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-patroni-role) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The Patroni role of a cluster member. | `primary`; `standby_leader`; `replica` |
+
+**[15] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+---
+
+`webitel.dcctl.patroni.role` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `other` | The member has a role other than the listed ones. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `primary` | The member is a primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `replica` | The member is a replica. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `standby_leader` | The member is the leader of a standby cluster. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `unknown` | The role is not known because the member is not reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.patroni.timeline`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.patroni.timeline` | Gauge | `{timeline}` | The timeline of the Patroni leader of the datacenter. [8] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[8]:** For a cluster that spans datacenters, the value is the largest timeline of the members of the datacenter.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [16] | `dc_a`; `dc_b` |
+
+**[16] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+## `webitel.dcctl.patroni.wal.position`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.patroni.wal.position` | Gauge | `By` | The WAL position of the Patroni leader of the datacenter. [9] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[9]:** The value is the LSN as a byte offset: the current WAL location of a primary, and the received WAL location of a standby leader.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the observed datacenter. [17] | `dc_a`; `dc_b` |
+
+**[17] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+## `webitel.dcctl.quorum.status`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.quorum.status` | UpDownCounter | `1` | The current status of the quorum. [10] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[10]:** A timeseries is produced for every possible value of `webitel.dcctl.quorum.mode`. The value of this metric is 1 for the current mode, and 0 for the other modes.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.quorum.mode`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-quorum-mode) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The mode in which the coordination state can be changed. | `quorum`; `forced_only` |
+
+---
+
+`webitel.dcctl.quorum.mode` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `forced_only` | A majority of voters is not reachable, and only a forced operation can change the state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `quorum` | A majority of voters is reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.source.status`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.source.status` | UpDownCounter | `1` | The current status of the source. [11] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[11]:** A timeseries is produced for every possible value of `webitel.dcctl.source.state`. The value of this metric is 1 for the current state of the source, and 0 for the other states.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.source.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-source-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of a source of dcctl. | `ok`; `partial`; `unreachable` |
+| [`webitel.dcctl.source.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-source-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system dcctl reads the state from. | `consul`; `nomad`; `patroni` |
+| [`webitel.datacenter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-datacenter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` Unless the source is the arbiter. | string | The name of the observed datacenter. [18] | `dc_a`; `dc_b` |
+
+**[18] `webitel.datacenter.name`:** The value MUST be the name of the datacenter as the deployment is configured with it.
+
+---
+
+`webitel.dcctl.source.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `ok` | All the queries to the source succeed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `partial` | Some of the queries to the source fail. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `unreachable` | The source is not reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.dcctl.source.system` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `arbiter` | The dcctl arbiter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `consul` | [Consul](https://www.consul.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `nomad` | [Nomad](https://www.nomadproject.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni` | [Patroni](https://patroni.readthedocs.io/) | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.step.duration`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.step.duration` | Histogram | `s` | Duration of the steps of operations. [12] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[12]:** This metric MUST be recorded once per step, by the instance that leads the operation, when the step reaches `succeeded`, `failed` or `skipped`.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.operation.type`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-operation-type) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The type of the operation. | `switch`; `failover`; `demote` |
+| [`webitel.dcctl.step.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-step-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the step of an operation. [19] | `pending`; `running`; `succeeded` |
+| [`webitel.dcctl.step.type`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-step-type) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The type of the step of an operation. [20] | `apps_preflight`; `apps_stop`; `apps_start` |
+| [`webitel.dcctl.job.stage`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-job-stage) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the step stops or starts managed jobs. | int | The start stage of a job managed by dcctl. [21] | `1`; `2`; `3` |
+
+**[19] `webitel.dcctl.step.state`:** MUST be `succeeded`, `failed` or `skipped`.
+
+**[20] `webitel.dcctl.step.type`:** The stage of the managed jobs a step stops or starts is not part of the value, it is set in `webitel.dcctl.job.stage`.
+
+**[21] `webitel.dcctl.job.stage`:** The value is the `dcctl_stage` of the job. Jobs start in ascending order of the stage and stop in descending order.
+
+---
+
+`webitel.dcctl.operation.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `demote` | Demotion of the database of a datacenter to a standby. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `failover` | Forced switch of the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `initialize` | Initialization of the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `initialize_arbiter` | Initialization of the arbiter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `mark_recovered` | Removal of a datacenter from the datacenters that need recovery. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `repoint` | Repointing of the standby database of a datacenter to the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `resolve_conflict` | Resolution of a conflict between records of the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `switch` | Planned switch of the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `sync_apps` | Synchronization of managed jobs with the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.dcctl.step.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `failed` | The step failed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `pending` | The step has not started. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `running` | The step is in progress. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `skipped` | The step was skipped. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `succeeded` | The step completed. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+---
+
+`webitel.dcctl.step.type` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `apps_preflight` | The managed jobs of the datacenter are checked before the operation changes them. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `apps_start` | The managed jobs of a stage are started. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `apps_stop` | The managed jobs of a stage are stopped. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `generation` | The generation of the coordination state is changed. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_catchup` | The standby waits to catch up with the primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_demote` | The Patroni cluster of the datacenter is demoted to a standby. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_follow` | The standby cluster starts to follow the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_no_primary` | The step waits until the datacenter has no primary. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_promote` | The Patroni cluster of the datacenter is promoted. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_repoint` | The standby cluster is pointed to the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_switchover` | Patroni switches the leader over to the target datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `verify` | The result of the operation is verified. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.dcctl.voter.generation`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.voter.generation` | Gauge | `{generation}` | The generation held by a voter. [13] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[13]:** This metric MUST NOT be reported for a voter that is not reachable or holds no coordination state.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.voter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-voter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the voter. [22] | `dc_a`; `dc_b`; `arbiter` |
+
+**[22] `webitel.dcctl.voter.name`:** The value MUST be the name of the datacenter whose Consul is the voter, or `arbiter` for the arbiter.
+
+## `webitel.dcctl.voter.status`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.dcctl.voter.status` | UpDownCounter | `1` | The current status of the voter. [14] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[14]:** A timeseries is produced for every possible value of `webitel.dcctl.voter.state`. The value of this metric is 1 for the current state of the voter, and 0 for the other states.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.dcctl.voter.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-voter-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the voter. [23] | `dc_a`; `dc_b`; `arbiter` |
+| [`webitel.dcctl.voter.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-dcctl-voter-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the voter. | `ok`; `unreachable`; `uninitialized` |
+
+**[23] `webitel.dcctl.voter.name`:** The value MUST be the name of the datacenter whose Consul is the voter, or `arbiter` for the arbiter.
+
+---
+
+`webitel.dcctl.voter.state` has the following list of well-known values. If one of them applies, then the respective value MUST be used; otherwise, a custom value MAY be used.
+
+| Value | Description | Stability |
+| --- | --- | --- |
+| `ok` | The voter is reachable and holds the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `uninitialized` | The voter is reachable and holds no coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `unreachable` | The voter is not reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
+
+## `webitel.health.check.duration`
+
+| Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
+| -------- | --------------- | ----------- | -------------- | --------- | ------ |
+| `webitel.health.check.duration` | Gauge | `s` | Duration of the last completed run of a health check. [15] | ![Development](https://img.shields.io/badge/-development-blue) | |
+
+**Requirement Level:** `Recommended`
+
+**[15]:** This metric MUST NOT be reported before the first run of the check completes. A run in progress MUST NOT update the value.
+
+**Attributes:**
+
+| Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
+| --- | --- | --- | --- | --- | --- |
+| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [24] | `liveness`; `critical`; `informational` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [25] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [26] | `whatsapp`; `standby` |
+
+**[24] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
+
+**[25] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+
+**[26] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -69,28 +614,28 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.health.check.status` | UpDownCounter | `1` | The current status of the health check. [2] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.health.check.status` | UpDownCounter | `1` | The current status of the health check. [16] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[2]:** A timeseries is produced for every possible value of `webitel.health.check.state`. The value of this metric is 1 for the current state of the check, and 0 for the other states.
+**[16]:** A timeseries is produced for every possible value of `webitel.health.check.state`. The value of this metric is 1 for the current state of the check, and 0 for the other states.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [4] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [5] | `ok`; `fail`; `unknown` |
-| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [6] | `postgresql`; `redis`; `rabbitmq` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [7] | `whatsapp`; `standby` |
+| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [27] | `liveness`; `critical`; `informational` |
+| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [28] | `ok`; `fail`; `unknown` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [29] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [30] | `whatsapp`; `standby` |
 
-**[4] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
+**[27] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
 
-**[5] `webitel.health.check.state`:** A check MUST move to `fail` only after several consecutive failures, and MUST move to `ok` on the first success.
+**[28] `webitel.health.check.state`:** A check MUST move to `fail` only after several consecutive failures, and MUST move to `ok` on the first success.
 
-**[6] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+**[29] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
 
-**[7] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
+**[30] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -128,28 +673,28 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.health.check.transitions` | Counter | `{transition}` | Number of transitions of a health check into the state described by the `webitel.health.check.state` attribute. [3] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.health.check.transitions` | Counter | `{transition}` | Number of transitions of a health check into the state described by the `webitel.health.check.state` attribute. [17] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[3]:** The first completed run of a check MUST be counted as a transition. A result becoming stale MUST NOT be counted as a transition.
+**[17]:** The first completed run of a check MUST be counted as a transition. A result becoming stale MUST NOT be counted as a transition.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [8] | `liveness`; `critical`; `informational` |
-| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [9] | `ok`; `fail`; `unknown` |
-| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [10] | `postgresql`; `redis`; `rabbitmq` |
-| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [11] | `whatsapp`; `standby` |
+| [`webitel.health.check.group`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-group) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [31] | `liveness`; `critical`; `informational` |
+| [`webitel.health.check.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the health check. [32] | `ok`; `fail`; `unknown` |
+| [`webitel.health.check.system`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-system) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The system the health check probes. [33] | `postgresql`; `redis`; `rabbitmq` |
+| [`webitel.health.check.name`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-check-name) | ![Development](https://img.shields.io/badge/-development-blue) | `Conditionally Required` If the check is registered with a name. | string | The name that tells apart health checks of the same system. [34] | `whatsapp`; `standby` |
 
-**[8] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
+**[31] `webitel.health.check.group`:** The group is assigned when the check is registered. A check of shared infrastructure SHOULD NOT be assigned to `critical`.
 
-**[9] `webitel.health.check.state`:** `unknown` MUST NOT be reported.
+**[32] `webitel.health.check.state`:** `unknown` MUST NOT be reported.
 
-**[10] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
+**[33] `webitel.health.check.system`:** A health check is a probe that the node runs in the background on its own schedule; its last result is cached. Reading a health check metric MUST NOT trigger a run of the check. A system that has a value in `db.system.name`, `messaging.system` or `rpc.system.name` MUST use that value. A check of a listener of the node itself SHOULD use the protocol of the listener, such as `grpc` or `http`. A custom value MUST be of low cardinality.
 
-**[11] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
+**[34] `webitel.health.check.name`:** Instrumentations SHOULD set the name only when a node runs more than one check of the same `webitel.health.check.system`. The value MUST be static: it MUST NOT contain a host, an address, a tenant or any other value that varies at runtime.
 
 ---
 
@@ -187,19 +732,19 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.health.status` | UpDownCounter | `1` | The current readiness status of the node. [4] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.health.status` | UpDownCounter | `1` | The current readiness status of the node. [18] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[4]:** A timeseries is produced for every possible value of `webitel.health.state`. The value of this metric is 1 for the current state of the node, and 0 for the other states.
+**[18]:** A timeseries is produced for every possible value of `webitel.health.state`. The value of this metric is 1 for the current state of the node, and 0 for the other states.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.health.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The readiness state of the node. [12] | `ready`; `degraded`; `not_ready` |
+| [`webitel.health.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-health-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The readiness state of the node. [35] | `ready`; `degraded`; `not_ready` |
 
-**[12] `webitel.health.state`:** The node MUST be `not_ready` before any check has passed, while a `liveness` or `critical` check fails, and while the node shuts down.
+**[35] `webitel.health.state`:** The node MUST be `not_ready` before any check has passed, while a `liveness` or `critical` check fails, and while the node shuts down.
 
 ---
 
@@ -215,19 +760,19 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.kb.article.index.count` | UpDownCounter | `{article}` | Number of article indexes that are currently in the state described by the `webitel.kb.article.index.state` attribute. [5] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.kb.article.index.count` | UpDownCounter | `{article}` | Number of article indexes that are currently in the state described by the `webitel.kb.article.index.state` attribute. [19] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[5]:** Each live article has one index, in the state of its latest version. This metric MUST be reported by a single node.
+**[19]:** Each live article has one index, in the state of its latest version. This metric MUST be reported by a single node.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [13] | `pending`; `indexing`; `indexed` |
+| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [36] | `pending`; `indexing`; `indexed` |
 
-**[13] `webitel.kb.article.index.state`:** The state is that of the latest version of the article.
+**[36] `webitel.kb.article.index.state`:** The state is that of the latest version of the article.
 
 ---
 
@@ -244,37 +789,37 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.kb.article.index.duration` | Histogram | `s` | Duration from an article edit to the new version of the article becoming searchable. [6] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.kb.article.index.duration` | Histogram | `s` | Duration from an article edit to the new version of the article becoming searchable. [20] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[6]:** This metric MUST be recorded once per version that becomes searchable, and MUST NOT be recorded for a job that makes no version searchable. A negative duration, caused by a clock skew between hosts, MUST be recorded as 0.
+**[20]:** This metric MUST be recorded once per version that becomes searchable, and MUST NOT be recorded for a job that makes no version searchable. A negative duration, caused by a clock skew between hosts, MUST be recorded as 0.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.embedded`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-embedded) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | boolean | Whether the article version was embedded for vector search. [14] | `true`; `false` |
+| [`webitel.kb.article.index.embedded`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-embedded) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | boolean | Whether the article version was embedded for vector search. [37] | `true`; `false` |
 
-**[14] `webitel.kb.article.index.embedded`:** `false` for a space without vector search, where a version is only indexed for full-text search.
+**[37] `webitel.kb.article.index.embedded`:** `false` for a space without vector search, where a version is only indexed for full-text search.
 
 ## `webitel.kb.article.index.job.count`
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.kb.article.index.job.count` | Gauge | `{job}` | Number of indexing jobs that are currently waiting in the broker in the state described by the `webitel.kb.article.index.state` attribute. [7] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.kb.article.index.job.count` | Gauge | `{job}` | Number of indexing jobs that are currently waiting in the broker in the state described by the `webitel.kb.article.index.state` attribute. [21] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[7]:** A `pending` job waits in the `kb.reindex` queue, a `failed` job in the `kb.reindex.dlq` queue. A job that is being processed MUST NOT be counted. This metric MUST NOT be reported while the broker is unreachable.
+**[21]:** A `pending` job waits in the `kb.reindex` queue, a `failed` job in the `kb.reindex.dlq` queue. A job that is being processed MUST NOT be counted. This metric MUST NOT be reported while the broker is unreachable.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [15] | `pending`; `indexing`; `indexed` |
+| [`webitel.kb.article.index.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-article-index-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the index of an article. [38] | `pending`; `indexing`; `indexed` |
 
-**[15] `webitel.kb.article.index.state`:** Only `pending` and `failed` apply.
+**[38] `webitel.kb.article.index.state`:** Only `pending` and `failed` apply.
 
 ---
 
@@ -291,19 +836,19 @@
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.kb.article.index.job.failed` | Counter | `{job}` | Number of indexing jobs sent to the dead letter queue. [8] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.kb.article.index.job.failed` | Counter | `{job}` | Number of indexing jobs sent to the dead letter queue. [22] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[8]:** A job MUST be counted once, when it is sent to the dead letter queue. Failed attempts that are retried MUST NOT be counted.
+**[22]:** A job MUST be counted once, when it is sent to the dead letter queue. Failed attempts that are retried MUST NOT be counted.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Required` | string | Describes a class of error the operation ended with. [16] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Required` | string | Describes a class of error the operation ended with. [39] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
 
-**[16] `error.type`:** One of: `envelope` — the message is not a valid indexing job; `permanent` — a retry cannot fix the failure; `exhausted` — the retries ran out; `unexpected` — any other failure.
+**[39] `error.type`:** One of: `envelope` — the message is not a valid indexing job; `permanent` — a retry cannot fix the failure; `exhausted` — the retries ran out; `unexpected` — any other failure.
 
 ---
 
@@ -327,9 +872,9 @@
 | --- | --- | --- | --- | --- | --- |
 | [`webitel.kb.rerank.model`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-model) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the model a rerank request is made to, as named by the provider. | `rerank-v3.5`; `bge-reranker-v2-m3` |
 | [`webitel.kb.rerank.provider`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-kb-rerank-provider) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The name of the rerank provider. | `cohere`; `bge-reranker` |
-| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the call failed. | string | Describes a class of error the operation ended with. [17] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
+| [`error.type`](https://github.com/open-telemetry/semantic-conventions/blob/v1.43.0/docs/registry/attributes/error.md) | ![Stable](https://img.shields.io/badge/-stable-lightgreen) | `Conditionally Required` If the call failed. | string | Describes a class of error the operation ended with. [40] | `timeout`; `java.net.UnknownHostException`; `server_certificate_invalid`; `500` |
 
-**[17] `error.type`:** The `error.type` SHOULD be predictable, and SHOULD have low cardinality.
+**[40] `error.type`:** The `error.type` SHOULD be predictable, and SHOULD have low cardinality.
 
 When `error.type` is set to a type (e.g., an exception type), its
 canonical class name identifying the type within the artifact SHOULD be used.
@@ -367,11 +912,11 @@ it's RECOMMENDED to:
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.outbox.event.age` | Gauge | `s` | Age of the oldest outbox event waiting to be published to the broker. [9] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.outbox.event.age` | Gauge | `s` | Age of the oldest outbox event waiting to be published to the broker. [23] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[9]:** The value MUST be 0 when no event is waiting. This metric MUST be reported only by the node that runs the relay.
+**[23]:** The value MUST be 0 when no event is waiting. This metric MUST be reported only by the node that runs the relay.
 
 
 
@@ -379,11 +924,11 @@ it's RECOMMENDED to:
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.outbox.event.count` | UpDownCounter | `{event}` | Number of outbox events waiting to be published to the broker. [10] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.outbox.event.count` | UpDownCounter | `{event}` | Number of outbox events waiting to be published to the broker. [24] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[10]:** This metric MUST be reported only by the node that runs the relay.
+**[24]:** This metric MUST be reported only by the node that runs the relay.
 
 
 
@@ -391,11 +936,11 @@ it's RECOMMENDED to:
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.outbox.relay.poisoned` | Counter | `{event}` | Number of outbox events moved to the poison queue after the relay ran out of retries. [11] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.outbox.relay.poisoned` | Counter | `{event}` | Number of outbox events moved to the poison queue after the relay ran out of retries. [25] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[11]:** An event MUST be counted once, when it is moved to the poison queue. An event in the poison queue is never published.
+**[25]:** An event MUST be counted once, when it is moved to the poison queue. An event in the poison queue is never published.
 
 
 
@@ -403,19 +948,19 @@ it's RECOMMENDED to:
 
 | Name | Instrument Type | Unit (UCUM) | Description | Stability | Entity Associations |
 | -------- | --------------- | ----------- | -------------- | --------- | ------ |
-| `webitel.outbox.relay.status` | UpDownCounter | `1` | The current status of the node in the outbox relay. [12] | ![Development](https://img.shields.io/badge/-development-blue) | |
+| `webitel.outbox.relay.status` | UpDownCounter | `1` | The current status of the node in the outbox relay. [26] | ![Development](https://img.shields.io/badge/-development-blue) | |
 
 **Requirement Level:** `Recommended`
 
-**[12]:** A timeseries is produced for every possible value of `webitel.outbox.relay.state`. The value of this metric is 1 for the current state of the node, and 0 for the other states.
+**[26]:** A timeseries is produced for every possible value of `webitel.outbox.relay.state`. The value of this metric is 1 for the current state of the node, and 0 for the other states.
 
 **Attributes:**
 
 | Key | Stability | [Requirement Level](https://opentelemetry.io/docs/specs/semconv/general/attribute-requirement-level/) | Value Type | Description | Example Values |
 | --- | --- | --- | --- | --- | --- |
-| [`webitel.outbox.relay.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-outbox-relay-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the node in the outbox relay. [18] | `leader`; `follower` |
+| [`webitel.outbox.relay.state`](https://github.com/webitel/opentelemetry-semantic-conventions/blob/main/docs/webitel/README.md#webitel-outbox-relay-state) | ![Development](https://img.shields.io/badge/-development-blue) | `Required` | string | The state of the node in the outbox relay. [41] | `leader`; `follower` |
 
-**[18] `webitel.outbox.relay.state`:** Only the node that holds the relay lock MUST be in the `leader` state.
+**[41] `webitel.outbox.relay.state`:** Only the node that holds the relay lock MUST be in the `leader` state.
 
 ---
 
