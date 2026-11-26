@@ -15,6 +15,10 @@ groups:
               value: "uninitialized"
               brief: No voter holds the coordination state.
               stability: development
+            - id: undetermined
+              value: "undetermined"
+              brief: The role of the datacenter cannot be told, because the voters give no decided effective state.
+              stability: development
             - id: active
               value: "active"
               brief: The datacenter is the active datacenter of the effective state.
@@ -44,7 +48,10 @@ groups:
         note: >
           The state is the first of the values, in the order listed, whose
           condition holds. A datacenter is in exactly one state. A condition
-          whose source is not reachable is skipped.
+          whose source is not reachable is skipped. The value `undetermined`
+          is reported when the voters have a conflict, or when voters that do
+          not answer may hold a newer record. dcctl never guesses `active` or
+          `standby` then.
 
       - id: webitel.dcctl.voter.name
         type: string
@@ -52,8 +59,9 @@ groups:
         brief: The name of the voter.
         note: >
           The value MUST be the name of the datacenter whose Consul is the
-          voter, or `arbiter` for the arbiter.
-        examples: ["dc_a", "dc_b", "arbiter"]
+          voter, or `arbiter` for the arbiter. In the stretch profile the
+          single cluster-wide Consul voter is named `consul`.
+        examples: ["dc_a", "dc_b", "arbiter", "consul"]
 
       - id: webitel.dcctl.voter.state
         type:
@@ -69,6 +77,10 @@ groups:
             - id: uninitialized
               value: "uninitialized"
               brief: The voter is reachable and holds no coordination state.
+              stability: development
+            - id: invalid
+              value: "invalid"
+              brief: The voter answered, but its `dcctl/state` record cannot be decoded.
               stability: development
         stability: development
         brief: The state of the voter.
@@ -392,6 +404,10 @@ groups:
             - id: patroni_switchover
               value: "patroni_switchover"
               brief: Patroni switches the leader over to the target datacenter.
+              stability: development
+            - id: patroni_failover
+              value: "patroni_failover"
+              brief: Patroni fails over inside one cluster that has no leader (stretch profile).
               stability: development
         stability: development
         brief: The type of the step of an operation.
