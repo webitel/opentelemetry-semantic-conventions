@@ -109,6 +109,10 @@ groups:
     metric_name: webitel.dcctl.patroni.member.count
     stability: development
     brief: "Number of Patroni members of the datacenter that currently have the role described by the `webitel.dcctl.patroni.role` attribute."
+    note: >
+      The role `unknown` counts the members that do not answer while the
+      Patroni of the cluster does. Nothing is reported for a datacenter whose
+      Patroni does not answer at all.
     instrument: updowncounter
     unit: "{member}"
     attributes:

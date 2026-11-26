@@ -57,7 +57,7 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | --- | --- | --- | --- | --- |
 | <a id="webitel-datacenter-name">`webitel.datacenter.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name of the datacenter. [1] | `dc_a`; `dc_b` |
 | <a id="webitel-dcctl-alarm-name">`webitel.dcctl.alarm.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The identifier of the alarm. [2] | `conflict`; `uncommitted`; `stale` |
-| <a id="webitel-dcctl-datacenter-state">`webitel.dcctl.datacenter.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The state of the datacenter. [3] | `unreachable`; `uninitialized`; `active` |
+| <a id="webitel-dcctl-datacenter-state">`webitel.dcctl.datacenter.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The state of the datacenter. [3] | `unreachable`; `uninitialized`; `undetermined` |
 | <a id="webitel-dcctl-job-stage">`webitel.dcctl.job.stage`</a> | ![Development](https://img.shields.io/badge/-development-blue) | int | The start stage of a job managed by dcctl. [4] | `1`; `2`; `3` |
 | <a id="webitel-dcctl-job-state">`webitel.dcctl.job.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The state of a job managed by dcctl. | `healthy`; `unhealthy`; `stopping` |
 | <a id="webitel-dcctl-operation-mode">`webitel.dcctl.operation.mode`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The mode in which the operation changes the coordination state. | `quorum`; `forced` |
@@ -69,7 +69,7 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | <a id="webitel-dcctl-source-system">`webitel.dcctl.source.system`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The system dcctl reads the state from. | `consul`; `nomad`; `patroni` |
 | <a id="webitel-dcctl-step-state">`webitel.dcctl.step.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The state of the step of an operation. | `pending`; `running`; `succeeded` |
 | <a id="webitel-dcctl-step-type">`webitel.dcctl.step.type`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The type of the step of an operation. [5] | `apps_preflight`; `apps_stop`; `apps_start` |
-| <a id="webitel-dcctl-voter-name">`webitel.dcctl.voter.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name of the voter. [6] | `dc_a`; `dc_b`; `arbiter` |
+| <a id="webitel-dcctl-voter-name">`webitel.dcctl.voter.name`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The name of the voter. [6] | `dc_a`; `dc_b`; `arbiter`; `consul` |
 | <a id="webitel-dcctl-voter-state">`webitel.dcctl.voter.state`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The state of the voter. | `ok`; `unreachable`; `uninitialized` |
 | <a id="webitel-domain-id">`webitel.domain.id`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The ID of the domain (tenant) the operation belongs to. [7] | `1`; `42` |
 | <a id="webitel-health-check-group">`webitel.health.check.group`</a> | ![Development](https://img.shields.io/badge/-development-blue) | string | The group of the health check, which determines how a failure of the check affects the readiness of the node. [8] | `liveness`; `critical`; `informational` |
@@ -87,13 +87,13 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 
 **[2] `webitel.dcctl.alarm.name`:** The value is the `id` of an alarm of the dcctl alarm catalog.
 
-**[3] `webitel.dcctl.datacenter.state`:** The state is the first of the values, in the order listed, whose condition holds. A datacenter is in exactly one state. A condition whose source is not reachable is skipped.
+**[3] `webitel.dcctl.datacenter.state`:** The state is the first of the values, in the order listed, whose condition holds. A datacenter is in exactly one state. A condition whose source is not reachable is skipped. The value `undetermined` is reported when the voters have a conflict, or when voters that do not answer may hold a newer record. dcctl never guesses `active` or `standby` then.
 
 **[4] `webitel.dcctl.job.stage`:** The value is the `dcctl_stage` of the job. Jobs start in ascending order of the stage and stop in descending order.
 
 **[5] `webitel.dcctl.step.type`:** The stage of the managed jobs a step stops or starts is not part of the value, it is set in `webitel.dcctl.job.stage`.
 
-**[6] `webitel.dcctl.voter.name`:** The value MUST be the name of the datacenter whose Consul is the voter, or `arbiter` for the arbiter.
+**[6] `webitel.dcctl.voter.name`:** The value MUST be the name of the datacenter whose Consul is the voter, or `arbiter` for the arbiter. In the stretch profile the single cluster-wide Consul voter is named `consul`.
 
 **[7] `webitel.domain.id`:** The value MUST be the decimal domain ID taken from a verified authorization context, never from client input. It is propagated in W3C baggage under the same key.
 
@@ -149,6 +149,7 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | `split_brain` | The datacenter is not active, and a managed job of it is not stopped. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `stale` | The voter of the datacenter holds a generation lower than the effective one. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `standby` | The datacenter is not active, and none of the other states apply. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `undetermined` | The role of the datacenter cannot be told, because the voters give no decided effective state. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `uninitialized` | No voter holds the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `unreachable` | No source of the datacenter is reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
 
@@ -266,6 +267,7 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 | `generation` | The generation of the coordination state is changed. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `patroni_catchup` | The standby waits to catch up with the primary. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `patroni_demote` | The Patroni cluster of the datacenter is demoted to a standby. | ![Development](https://img.shields.io/badge/-development-blue) |
+| `patroni_failover` | Patroni fails over inside one cluster that has no leader (stretch profile). | ![Development](https://img.shields.io/badge/-development-blue) |
 | `patroni_follow` | The standby cluster starts to follow the active datacenter. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `patroni_no_primary` | The step waits until the datacenter has no primary. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `patroni_promote` | The Patroni cluster of the datacenter is promoted. | ![Development](https://img.shields.io/badge/-development-blue) |
@@ -279,6 +281,7 @@ Attributes defined in the `webitel` namespace. Application developers are encour
 
 | Value | Description | Stability |
 | --- | --- | --- |
+| `invalid` | The voter answered, but its `dcctl/state` record cannot be decoded. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `ok` | The voter is reachable and holds the coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `uninitialized` | The voter is reachable and holds no coordination state. | ![Development](https://img.shields.io/badge/-development-blue) |
 | `unreachable` | The voter is not reachable. | ![Development](https://img.shields.io/badge/-development-blue) |
